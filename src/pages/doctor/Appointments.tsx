@@ -1,11 +1,12 @@
 
 import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { mockAppointments, mockPatients } from '@/data/mockData';
-import { Calendar, Clock, User, Phone, MapPin } from 'lucide-react';
+import { Calendar, Clock, User, Phone, FileText, Pill } from 'lucide-react';
 
 const DoctorAppointments = () => {
   const [appointments] = useState(mockAppointments);
@@ -17,10 +18,6 @@ const DoctorAppointments = () => {
 
   const handleStartConsultation = (appointmentId: string) => {
     console.log('Starting consultation for appointment:', appointmentId);
-  };
-
-  const handleViewPatientHistory = (patientId: string) => {
-    console.log('Viewing patient history for:', patientId);
   };
 
   const AppointmentCard = ({ appointment, showActions = true }: { appointment: any, showActions?: boolean }) => {
@@ -84,18 +81,26 @@ const DoctorAppointments = () => {
               </Badge>
               
               {showActions && appointment.status === 'scheduled' && (
-                <div className="flex space-x-2">
+                <div className="flex flex-col space-y-2">
+                  <div className="flex space-x-2">
+                    <Link to={`/doctor/patient/${appointment.patientId}/history`}>
+                      <Button size="sm" variant="outline" className="text-xs">
+                        <FileText className="w-3 h-3 mr-1" />
+                        Medical History
+                      </Button>
+                    </Link>
+                    <Link to={`/doctor/patient/${appointment.patientId}/prescribe`}>
+                      <Button size="sm" className="bg-medical-600 hover:bg-medical-700 text-xs">
+                        <Pill className="w-3 h-3 mr-1" />
+                        Write Prescription
+                      </Button>
+                    </Link>
+                  </div>
                   <Button 
                     size="sm" 
                     variant="outline"
-                    onClick={() => handleViewPatientHistory(appointment.patientId)}
-                  >
-                    View History
-                  </Button>
-                  <Button 
-                    size="sm" 
-                    className="bg-medical-600 hover:bg-medical-700"
                     onClick={() => handleStartConsultation(appointment.id)}
+                    className="w-full"
                   >
                     Start Visit
                   </Button>

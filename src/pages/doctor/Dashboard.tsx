@@ -10,13 +10,17 @@ import {
   Users, 
   User,
   TestTube,
-  Pill
+  Pill,
+  Clock
 } from 'lucide-react';
 import DoctorOverview from '@/pages/doctor/Overview';
 import DoctorAppointments from '@/pages/doctor/Appointments';
 import PatientHistory from '@/pages/doctor/PatientHistory';
 import CreatePrescription from '@/pages/doctor/CreatePrescription';
 import TestReview from '@/pages/doctor/TestReview';
+import DoctorProfile from '@/pages/doctor/Profile';
+import DoctorSchedule from '@/pages/doctor/Schedule';
+import PatientMedicalHistory from '@/pages/doctor/PatientMedicalHistory';
 
 const DoctorDashboard = () => {
   const location = useLocation();
@@ -27,7 +31,8 @@ const DoctorDashboard = () => {
     { path: '/doctor/patients', icon: Users, label: 'Patient History' },
     { path: '/doctor/tests', icon: TestTube, label: 'Test Review' },
     { path: '/doctor/prescriptions', icon: Pill, label: 'Prescriptions' },
-    { path: '/doctor/profile', icon: User, label: 'Profile' },
+    { path: '/doctor/schedule', icon: Clock, label: 'My Schedule' },
+    { path: '/doctor/profile', icon: User, label: 'My Profile' },
   ];
 
   const isActive = (path: string, exact = false) => {
@@ -67,7 +72,10 @@ const DoctorDashboard = () => {
         <Route path="patients" element={<PatientHistory />} />
         <Route path="tests" element={<TestReview />} />
         <Route path="prescriptions/*" element={<CreatePrescription />} />
-        <Route path="profile" element={<div className="p-6"><h1 className="text-2xl font-bold">Doctor Profile - Coming Soon</h1></div>} />
+        <Route path="schedule" element={<DoctorSchedule />} />
+        <Route path="profile" element={<DoctorProfile />} />
+        <Route path="patient/:patientId/history" element={<PatientMedicalHistory />} />
+        <Route path="patient/:patientId/prescribe" element={<CreatePrescription />} />
       </Routes>
     </DashboardLayout>
   );
