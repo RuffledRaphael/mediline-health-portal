@@ -20,8 +20,8 @@ const DoctorSearch = () => {
   const filteredDoctors = mockDoctors.filter(doctor => {
     const matchesSearch = doctor.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          doctor.specialization.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesSpecialty = !selectedSpecialty || doctor.specialization === selectedSpecialty;
-    const matchesLocation = !selectedLocation || doctor.hospital === selectedLocation;
+    const matchesSpecialty = !selectedSpecialty || selectedSpecialty === 'all-specialties' || doctor.specialization === selectedSpecialty;
+    const matchesLocation = !selectedLocation || selectedLocation === 'all-locations' || doctor.hospital === selectedLocation;
     
     return matchesSearch && matchesSpecialty && matchesLocation;
   });
@@ -57,7 +57,7 @@ const DoctorSearch = () => {
                   <SelectValue placeholder="All Specialties" />
                 </SelectTrigger>
                 <SelectContent className="bg-white">
-                  <SelectItem value="">All Specialties</SelectItem>
+                  <SelectItem value="all-specialties">All Specialties</SelectItem>
                   {specialties.map(specialty => (
                     <SelectItem key={specialty} value={specialty}>{specialty}</SelectItem>
                   ))}
@@ -70,7 +70,7 @@ const DoctorSearch = () => {
                   <SelectValue placeholder="All Locations" />
                 </SelectTrigger>
                 <SelectContent className="bg-white">
-                  <SelectItem value="">All Locations</SelectItem>
+                  <SelectItem value="all-locations">All Locations</SelectItem>
                   {locations.map(location => (
                     <SelectItem key={location} value={location}>{location}</SelectItem>
                   ))}
