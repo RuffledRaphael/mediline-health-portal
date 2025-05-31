@@ -27,11 +27,13 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children, sidebar }) 
       <header className="bg-white border-b border-gray-200 sticky top-0 z-50">
         <div className="px-6 py-4 flex justify-between items-center">
           <div className="flex items-center space-x-4">
-            <div className="flex items-center space-x-2">
-              <div className="w-8 h-8 bg-medical-600 rounded-lg flex items-center justify-center">
-                <span className="text-white font-bold text-sm">M</span>
-              </div>
-              <span className="text-xl font-bold text-gray-900">MediLine</span>
+            <div className="flex items-center space-x-3">
+              <img 
+                src="/lovable-uploads/139eaa8f-19d8-4536-8ed8-0a0361b34ea4.png" 
+                alt="MediLine Health Logo" 
+                className="h-10 w-auto"
+              />
+              <span className="text-xl font-bold text-gray-900">MediLine Health</span>
             </div>
           </div>
           

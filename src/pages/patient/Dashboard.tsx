@@ -16,6 +16,8 @@ import {
 import PatientOverview from '@/pages/patient/Overview';
 import PatientProfile from '@/pages/patient/Profile';
 import DoctorSearch from '@/pages/patient/DoctorSearch';
+import DoctorProfile from '@/pages/patient/DoctorProfile';
+import BookAppointment from '@/pages/patient/BookAppointment';
 import PatientAppointments from '@/pages/patient/Appointments';
 import PatientPrescriptions from '@/pages/patient/Prescriptions';
 import SymptomTracker from '@/pages/patient/SymptomTracker';
@@ -68,6 +70,8 @@ const PatientDashboard = () => {
         <Route index element={<PatientOverview />} />
         <Route path="profile" element={<PatientProfile />} />
         <Route path="doctors" element={<DoctorSearch />} />
+        <Route path="doctors/:doctorId" element={<DoctorProfile />} />
+        <Route path="book-appointment/:doctorId" element={<BookAppointment />} />
         <Route path="appointments" element={<PatientAppointments />} />
         <Route path="prescriptions" element={<PatientPrescriptions />} />
         <Route path="symptoms" element={<SymptomTracker />} />

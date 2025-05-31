@@ -1,5 +1,6 @@
 
 import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -24,11 +25,6 @@ const DoctorSearch = () => {
     
     return matchesSearch && matchesSpecialty && matchesLocation;
   });
-
-  const handleBookAppointment = (doctorId: string) => {
-    // Mock booking logic
-    console.log('Booking appointment with doctor:', doctorId);
-  };
 
   return (
     <div className="space-y-6">
@@ -173,16 +169,19 @@ const DoctorSearch = () => {
                       </div>
                       
                       <div className="flex space-x-2 mt-4">
-                        <Button 
-                          size="sm"
-                          className="bg-medical-600 hover:bg-medical-700"
-                          onClick={() => handleBookAppointment(doctor.id)}
-                        >
-                          Book Appointment
-                        </Button>
-                        <Button size="sm" variant="outline">
-                          View Profile
-                        </Button>
+                        <Link to={`/patient/book-appointment/${doctor.id}`}>
+                          <Button 
+                            size="sm"
+                            className="bg-medical-600 hover:bg-medical-700"
+                          >
+                            Book Appointment
+                          </Button>
+                        </Link>
+                        <Link to={`/patient/doctors/${doctor.id}`}>
+                          <Button size="sm" variant="outline">
+                            View Profile
+                          </Button>
+                        </Link>
                       </div>
                     </div>
                   </div>

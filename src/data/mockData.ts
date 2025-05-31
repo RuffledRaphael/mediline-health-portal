@@ -1,4 +1,3 @@
-
 import { Patient, Doctor, Hospital, Appointment, Prescription, TestResult, SymptomEntry } from '@/types';
 
 export const mockPatients: Patient[] = [
@@ -57,6 +56,61 @@ export const mockDoctors: Doctor[] = [
     availability: ['Tuesday', 'Wednesday', 'Thursday', 'Friday'],
     avatar: 'https://images.unsplash.com/photo-1594824506688-bd325451ad64?w=150&h=150&fit=crop&crop=face',
   },
+  {
+    id: '5',
+    name: 'Dr. James Wilson',
+    email: 'dr.wilson@hospital.com',
+    type: 'doctor',
+    specialization: 'Orthopedics',
+    degree: 'MD, FAAOS',
+    hospital: 'Sports Medicine Institute',
+    experience: 15,
+    consultationFee: 180,
+    availability: ['Monday', 'Tuesday', 'Thursday', 'Friday'],
+    avatar: 'https://images.unsplash.com/photo-1582750433449-648ed127bb54?w=150&h=150&fit=crop&crop=face',
+  },
+  {
+    id: '6',
+    name: 'Dr. Lisa Park',
+    email: 'dr.park@hospital.com',
+    type: 'doctor',
+    specialization: 'Neurology',
+    degree: 'MD, PhD',
+    hospital: 'Brain & Spine Center',
+    experience: 10,
+    consultationFee: 200,
+    availability: ['Wednesday', 'Thursday', 'Friday', 'Saturday'],
+    avatar: 'https://images.unsplash.com/photo-1551601651-2a8555f1a136?w=150&h=150&fit=crop&crop=face',
+  },
+];
+
+export const mockDoctorReviews = {
+  '2': [
+    { id: '1', patientName: 'Anonymous', rating: 5, comment: 'Excellent cardiologist! Very thorough and caring.', date: '2024-05-15' },
+    { id: '2', patientName: 'John D.', rating: 4, comment: 'Great experience, explained everything clearly.', date: '2024-05-10' },
+    { id: '3', patientName: 'Mary S.', rating: 5, comment: 'Dr. Johnson saved my life. Highly recommend!', date: '2024-05-05' },
+  ],
+  '3': [
+    { id: '4', patientName: 'Alice M.', rating: 5, comment: 'Best dermatologist in town. Very professional.', date: '2024-05-20' },
+    { id: '5', patientName: 'Bob K.', rating: 4, comment: 'Good treatment, reasonable fees.', date: '2024-05-12' },
+  ],
+  '4': [
+    { id: '6', patientName: 'Sarah L.', rating: 5, comment: 'Amazing with children. My kids love her!', date: '2024-05-18' },
+    { id: '7', patientName: 'Tom R.', rating: 5, comment: 'Very patient and understanding pediatrician.', date: '2024-05-08' },
+  ],
+  '5': [
+    { id: '8', patientName: 'Mike H.', rating: 4, comment: 'Helped me recover from my knee injury quickly.', date: '2024-05-22' },
+    { id: '9', patientName: 'Jennifer P.', rating: 5, comment: 'Excellent surgeon, great bedside manner.', date: '2024-05-14' },
+  ],
+  '6': [
+    { id: '10', patientName: 'David W.', rating: 5, comment: 'Top neurologist. Very knowledgeable and helpful.', date: '2024-05-25' },
+    { id: '11', patientName: 'Emma T.', rating: 4, comment: 'Professional and thorough examination.', date: '2024-05-16' },
+  ],
+};
+
+export const mockTimeSlots = [
+  '09:00 AM', '09:30 AM', '10:00 AM', '10:30 AM', '11:00 AM', '11:30 AM',
+  '02:00 PM', '02:30 PM', '03:00 PM', '03:30 PM', '04:00 PM', '04:30 PM'
 ];
 
 export const mockHospitals: Hospital[] = [
