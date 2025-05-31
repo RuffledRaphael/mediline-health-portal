@@ -21,6 +21,7 @@ import BookAppointment from '@/pages/patient/BookAppointment';
 import PatientAppointments from '@/pages/patient/Appointments';
 import PatientPrescriptions from '@/pages/patient/Prescriptions';
 import SymptomTracker from '@/pages/patient/SymptomTracker';
+import TestResults from '@/pages/patient/TestResults';
 
 const PatientDashboard = () => {
   const location = useLocation();
@@ -75,7 +76,7 @@ const PatientDashboard = () => {
         <Route path="appointments" element={<PatientAppointments />} />
         <Route path="prescriptions" element={<PatientPrescriptions />} />
         <Route path="symptoms" element={<SymptomTracker />} />
-        <Route path="tests" element={<div className="p-6"><h1 className="text-2xl font-bold">Test Results - Coming Soon</h1></div>} />
+        <Route path="tests" element={<TestResults />} />
       </Routes>
     </DashboardLayout>
   );

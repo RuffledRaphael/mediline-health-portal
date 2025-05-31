@@ -7,30 +7,48 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useToast } from '@/hooks/use-toast';
-import { mockPatients } from '@/data/mockData';
+import { mockPatients, mockPrescriptions, mockDoctors } from '@/data/mockData';
 import { Upload, FileText, User, TestTube, Search } from 'lucide-react';
 
 const TestUpload = () => {
   const { toast } = useToast();
   const [selectedPatient, setSelectedPatient] = useState('');
+  const [selectedPrescription, setSelectedPrescription] = useState('');
   const [testName, setTestName] = useState('');
   const [testType, setTestType] = useState('');
   const [result, setResult] = useState('');
   const [notes, setNotes] = useState('');
+  const [performedBy, setPerformedBy] = useState('');
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [parameters, setParameters] = useState([{ name: '', value: '', unit: '', normalRange: '' }]);
 
   const testTypes = [
-    'Blood Test',
+    'Pathology',
+    'Imaging'
+  ];
+
+  const pathologyTests = [
+    'Complete Blood Count (CBC)',
+    'Lipid Panel',
+    'Liver Function Test',
+    'Kidney Function Test',
+    'Blood Sugar Test',
+    'Thyroid Function Test',
+    'Urinalysis'
+  ];
+
+  const imagingTests = [
     'X-Ray',
     'MRI',
     'CT Scan',
     'Ultrasound',
     'ECG',
-    'Endoscopy',
-    'Biopsy',
-    'Urinalysis',
-    'Other'
+    'Endoscopy'
   ];
+
+  const getPatientPrescriptions = (patientId: string) => {
+    return mockPrescriptions.filter(presc => presc.patientId === patientId);
+  };
 
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -61,10 +79,25 @@ const TestUpload = () => {
     }
   };
 
+  const addParameter = () => {
+    setParameters([...parameters, { name: '', value: '', unit: '', normalRange: '' }]);
+  };
+
+  const removeParameter = (index: number) => {
+    setParameters(parameters.filter((_, i) => i !== index));
+  };
+
+  const updateParameter = (index: number, field: string, value: string) => {
+    const updated = parameters.map((param, i) => 
+      i === index ? { ...param, [field]: value } : param
+    );
+    setParameters(updated);
+  };
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!selectedPatient || !testName.trim() || !testType || !result.trim()) {
+    if (!selectedPatient || !testName.trim() || !testType || !result.trim() || !performedBy) {
       toast({
         title: 'Missing required fields',
         description: 'Please fill in all required fields.',
@@ -81,11 +114,14 @@ const TestUpload = () => {
 
     // Reset form
     setSelectedPatient('');
+    setSelectedPrescription('');
     setTestName('');
     setTestType('');
     setResult('');
     setNotes('');
+    setPerformedBy('');
     setSelectedFile(null);
+    setParameters([{ name: '', value: '', unit: '', normalRange: '' }]);
   };
 
   return (
@@ -124,22 +160,41 @@ const TestUpload = () => {
                   </SelectContent>
                 </Select>
               </div>
+              
               {selectedPatient && (
-                <div className="p-3 bg-gray-50 rounded-lg">
-                  <p className="text-sm font-medium text-gray-900">Patient Details</p>
-                  {(() => {
-                    const patient = mockPatients.find(p => p.id === selectedPatient);
-                    return patient ? (
-                      <div className="text-sm text-gray-600 mt-1">
-                        <p>Age: {new Date().getFullYear() - new Date(patient.dateOfBirth).getFullYear()}</p>
-                        <p>Blood Group: {patient.bloodGroup}</p>
-                        <p>Phone: {patient.phone}</p>
-                      </div>
-                    ) : null;
-                  })()}
+                <div>
+                  <Label htmlFor="prescription">Related Prescription (Optional)</Label>
+                  <Select value={selectedPrescription} onValueChange={setSelectedPrescription}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Choose related prescription" />
+                    </SelectTrigger>
+                    <SelectContent className="bg-white">
+                      {getPatientPrescriptions(selectedPatient).map((prescription) => (
+                        <SelectItem key={prescription.id} value={prescription.id}>
+                          {prescription.diagnosis} - {prescription.date}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 </div>
               )}
             </div>
+            
+            {selectedPatient && (
+              <div className="mt-4 p-3 bg-gray-50 rounded-lg">
+                <p className="text-sm font-medium text-gray-900">Patient Details</p>
+                {(() => {
+                  const patient = mockPatients.find(p => p.id === selectedPatient);
+                  return patient ? (
+                    <div className="text-sm text-gray-600 mt-1">
+                      <p>Age: {new Date().getFullYear() - new Date(patient.dateOfBirth).getFullYear()}</p>
+                      <p>Blood Group: {patient.bloodGroup}</p>
+                      <p>Phone: {patient.phone}</p>
+                    </div>
+                  ) : null;
+                })()}
+              </div>
+            )}
           </CardContent>
         </Card>
 
@@ -155,17 +210,7 @@ const TestUpload = () => {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <Label htmlFor="testName">Test Name *</Label>
-                <Input
-                  id="testName"
-                  value={testName}
-                  onChange={(e) => setTestName(e.target.value)}
-                  placeholder="e.g., Complete Blood Count"
-                  required
-                />
-              </div>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div>
                 <Label htmlFor="testType">Test Type *</Label>
                 <Select value={testType} onValueChange={setTestType}>
@@ -175,6 +220,37 @@ const TestUpload = () => {
                   <SelectContent className="bg-white">
                     {testTypes.map((type) => (
                       <SelectItem key={type} value={type}>{type}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              
+              <div>
+                <Label htmlFor="testName">Test Name *</Label>
+                <Select value={testName} onValueChange={setTestName}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select test name" />
+                  </SelectTrigger>
+                  <SelectContent className="bg-white">
+                    {testType === 'Pathology' && pathologyTests.map((test) => (
+                      <SelectItem key={test} value={test}>{test}</SelectItem>
+                    ))}
+                    {testType === 'Imaging' && imagingTests.map((test) => (
+                      <SelectItem key={test} value={test}>{test}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              
+              <div>
+                <Label htmlFor="performedBy">Performed By *</Label>
+                <Select value={performedBy} onValueChange={setPerformedBy}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select doctor" />
+                  </SelectTrigger>
+                  <SelectContent className="bg-white">
+                    {mockDoctors.map((doctor) => (
+                      <SelectItem key={doctor.id} value={doctor.name}>{doctor.name}</SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
@@ -205,6 +281,78 @@ const TestUpload = () => {
             </div>
           </CardContent>
         </Card>
+
+        {/* Parameter Inputs for Pathology */}
+        {testType === 'Pathology' && (
+          <Card>
+            <CardHeader>
+              <CardTitle>Test Parameters</CardTitle>
+              <CardDescription>
+                Enter detailed parameter values for pathology tests
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                {parameters.map((param, index) => (
+                  <div key={index} className="grid grid-cols-1 md:grid-cols-5 gap-4 items-end">
+                    <div>
+                      <Label>Parameter Name</Label>
+                      <Input
+                        placeholder="e.g., Hemoglobin"
+                        value={param.name}
+                        onChange={(e) => updateParameter(index, 'name', e.target.value)}
+                      />
+                    </div>
+                    <div>
+                      <Label>Value</Label>
+                      <Input
+                        placeholder="e.g., 14.2"
+                        value={param.value}
+                        onChange={(e) => updateParameter(index, 'value', e.target.value)}
+                      />
+                    </div>
+                    <div>
+                      <Label>Unit</Label>
+                      <Input
+                        placeholder="e.g., g/dL"
+                        value={param.unit}
+                        onChange={(e) => updateParameter(index, 'unit', e.target.value)}
+                      />
+                    </div>
+                    <div>
+                      <Label>Normal Range</Label>
+                      <Input
+                        placeholder="e.g., 12-15.5"
+                        value={param.normalRange}
+                        onChange={(e) => updateParameter(index, 'normalRange', e.target.value)}
+                      />
+                    </div>
+                    <div>
+                      {parameters.length > 1 && (
+                        <Button 
+                          type="button" 
+                          variant="outline" 
+                          size="sm"
+                          onClick={() => removeParameter(index)}
+                        >
+                          Remove
+                        </Button>
+                      )}
+                    </div>
+                  </div>
+                ))}
+                <Button 
+                  type="button" 
+                  variant="outline" 
+                  onClick={addParameter}
+                  className="w-full"
+                >
+                  Add Parameter
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        )}
 
         {/* File Upload */}
         <Card>

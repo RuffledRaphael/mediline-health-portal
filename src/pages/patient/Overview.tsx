@@ -7,6 +7,7 @@ import { useAuth } from '@/context/AuthContext';
 import { mockAppointments, mockPrescriptions, mockTestResults, mockDoctors } from '@/data/mockData';
 import { Calendar, Clock, User, FileText, TestTube, Heart, Activity } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import HealthMetrics from '@/components/patient/HealthMetrics';
 
 const PatientOverview = () => {
   const { user } = useAuth();
@@ -93,6 +94,20 @@ const PatientOverview = () => {
           </CardContent>
         </Card>
       </div>
+
+      {/* Health Metrics Section */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center">
+            <Activity className="w-5 h-5 mr-2 text-medical-600" />
+            Health Progress Tracker
+          </CardTitle>
+          <CardDescription>Monitor your health trends and vital signs</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <HealthMetrics />
+        </CardContent>
+      </Card>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Upcoming Appointments */}
@@ -216,10 +231,10 @@ const PatientOverview = () => {
                 <span>Book Appointment</span>
               </Button>
             </Link>
-            <Link to="/patient/prescriptions">
+            <Link to="/patient/tests">
               <Button variant="outline" className="w-full h-auto flex-col py-4">
-                <FileText className="w-6 h-6 mb-2 text-medical-600" />
-                <span>View Prescriptions</span>
+                <TestTube className="w-6 h-6 mb-2 text-medical-600" />
+                <span>View Test Results</span>
               </Button>
             </Link>
           </div>

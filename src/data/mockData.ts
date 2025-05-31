@@ -1,3 +1,4 @@
+
 import { Patient, Doctor, Hospital, Appointment, Prescription, TestResult, SymptomEntry } from '@/types';
 
 export const mockPatients: Patient[] = [
@@ -29,6 +30,10 @@ export const mockDoctors: Doctor[] = [
     consultationFee: 150,
     availability: ['Monday', 'Tuesday', 'Wednesday', 'Friday'],
     avatar: 'https://images.unsplash.com/photo-1559839734-2b71ea197ec2?w=150&h=150&fit=crop&crop=face',
+    bio: 'Dr. Sarah Johnson is a board-certified cardiologist with over 8 years of experience in treating complex cardiovascular conditions. She specializes in interventional cardiology and preventive heart care.',
+    rating: 4.8,
+    affiliatedCenters: ['City General Hospital', 'Heart Care Institute'],
+    consultingAddress: '456 Medical Plaza, Suite 302, Springfield, IL 62701',
   },
   {
     id: '3',
@@ -42,6 +47,10 @@ export const mockDoctors: Doctor[] = [
     consultationFee: 120,
     availability: ['Monday', 'Wednesday', 'Thursday', 'Saturday'],
     avatar: 'https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?w=150&h=150&fit=crop&crop=face',
+    bio: 'Dr. Michael Chen is a renowned dermatologist specializing in medical and cosmetic dermatology. He has extensive experience in skin cancer detection and advanced dermatological procedures.',
+    rating: 4.9,
+    affiliatedCenters: ['Metro Health Center', 'Skin Care Clinic'],
+    consultingAddress: '789 Wellness Blvd, Metro Health Center, Springfield, IL 62702',
   },
   {
     id: '4',
@@ -55,6 +64,10 @@ export const mockDoctors: Doctor[] = [
     consultationFee: 130,
     availability: ['Tuesday', 'Wednesday', 'Thursday', 'Friday'],
     avatar: 'https://images.unsplash.com/photo-1594824506688-bd325451ad64?w=150&h=150&fit=crop&crop=face',
+    bio: 'Dr. Emily Rodriguez is a compassionate pediatrician dedicated to providing comprehensive healthcare for children from infancy through adolescence.',
+    rating: 4.7,
+    affiliatedCenters: ['Children\'s Medical Center'],
+    consultingAddress: '123 Kids Care Ave, Children\'s Medical Center, Springfield, IL 62703',
   },
   {
     id: '5',
@@ -68,6 +81,10 @@ export const mockDoctors: Doctor[] = [
     consultationFee: 180,
     availability: ['Monday', 'Tuesday', 'Thursday', 'Friday'],
     avatar: 'https://images.unsplash.com/photo-1582750433449-648ed127bb54?w=150&h=150&fit=crop&crop=face',
+    bio: 'Dr. James Wilson is an orthopedic surgeon specializing in sports medicine and joint replacement. He has helped numerous athletes return to peak performance.',
+    rating: 4.6,
+    affiliatedCenters: ['Sports Medicine Institute', 'Orthopedic Center'],
+    consultingAddress: '321 Sports Dr, Sports Medicine Institute, Springfield, IL 62704',
   },
   {
     id: '6',
@@ -81,6 +98,10 @@ export const mockDoctors: Doctor[] = [
     consultationFee: 200,
     availability: ['Wednesday', 'Thursday', 'Friday', 'Saturday'],
     avatar: 'https://images.unsplash.com/photo-1551601651-2a8555f1a136?w=150&h=150&fit=crop&crop=face',
+    bio: 'Dr. Lisa Park is a neurologist with expertise in treating neurological disorders. She holds a PhD in neuroscience and focuses on innovative treatment approaches.',
+    rating: 4.9,
+    affiliatedCenters: ['Brain & Spine Center', 'Neurology Institute'],
+    consultingAddress: '654 Brain Ave, Brain & Spine Center, Springfield, IL 62705',
   },
 ];
 
@@ -198,10 +219,18 @@ export const mockTestResults: TestResult[] = [
     testOrderId: '1',
     hospitalId: '5',
     testName: 'Complete Blood Count (CBC)',
+    testType: 'Pathology',
     date: '2024-05-30',
     result: 'Normal values within reference range',
     reportUrl: '/mock-reports/cbc-report.pdf',
     status: 'completed',
+    performedBy: 'Dr. Sarah Johnson',
+    parameters: [
+      { name: 'Hemoglobin', value: '14.2', unit: 'g/dL', normalRange: '12-15.5', isNormal: true },
+      { name: 'White Blood Cells', value: '7500', unit: '/μL', normalRange: '4500-11000', isNormal: true },
+      { name: 'Platelets', value: '250000', unit: '/μL', normalRange: '150000-450000', isNormal: true },
+    ],
+    notes: 'All values are within normal limits. Continue current medication regimen.',
   },
   {
     id: '2',
@@ -209,10 +238,19 @@ export const mockTestResults: TestResult[] = [
     testOrderId: '2',
     hospitalId: '5',
     testName: 'Lipid Panel',
+    testType: 'Pathology',
     date: '2024-05-30',
-    result: 'Total cholesterol: 195 mg/dL (Normal)',
+    result: 'Total cholesterol slightly elevated',
     reportUrl: '/mock-reports/lipid-report.pdf',
     status: 'completed',
+    performedBy: 'Dr. Sarah Johnson',
+    parameters: [
+      { name: 'Total Cholesterol', value: '210', unit: 'mg/dL', normalRange: '<200', isNormal: false },
+      { name: 'LDL Cholesterol', value: '130', unit: 'mg/dL', normalRange: '<100', isNormal: false },
+      { name: 'HDL Cholesterol', value: '45', unit: 'mg/dL', normalRange: '>40', isNormal: true },
+      { name: 'Triglycerides', value: '175', unit: 'mg/dL', normalRange: '<150', isNormal: false },
+    ],
+    notes: 'Consider dietary modifications and increased physical activity.',
   },
 ];
 
@@ -234,3 +272,30 @@ export const mockSymptomEntries: SymptomEntry[] = [
     severity: 1,
   },
 ];
+
+export const mockHealthMetrics = {
+  weight: [
+    { date: '2024-01-01', value: 75.2 },
+    { date: '2024-02-01', value: 74.8 },
+    { date: '2024-03-01', value: 74.5 },
+    { date: '2024-04-01', value: 74.0 },
+    { date: '2024-05-01', value: 73.7 },
+    { date: '2024-06-01', value: 73.5 },
+  ],
+  bloodPressure: [
+    { date: '2024-01-15', systolic: 135, diastolic: 85 },
+    { date: '2024-02-15', systolic: 132, diastolic: 82 },
+    { date: '2024-03-15', systolic: 128, diastolic: 80 },
+    { date: '2024-04-15', systolic: 125, diastolic: 78 },
+    { date: '2024-05-15', systolic: 122, diastolic: 75 },
+    { date: '2024-06-01', systolic: 120, diastolic: 73 },
+  ],
+  heartRate: [
+    { date: '2024-01-01', value: 78 },
+    { date: '2024-02-01', value: 76 },
+    { date: '2024-03-01', value: 74 },
+    { date: '2024-04-01', value: 72 },
+    { date: '2024-05-01', value: 70 },
+    { date: '2024-06-01', value: 68 },
+  ],
+};

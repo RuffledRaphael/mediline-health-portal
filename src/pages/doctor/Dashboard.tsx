@@ -9,13 +9,14 @@ import {
   FileText, 
   Users, 
   User,
-  Stethoscope,
-  Clock
+  TestTube,
+  Pill
 } from 'lucide-react';
 import DoctorOverview from '@/pages/doctor/Overview';
 import DoctorAppointments from '@/pages/doctor/Appointments';
 import PatientHistory from '@/pages/doctor/PatientHistory';
 import CreatePrescription from '@/pages/doctor/CreatePrescription';
+import TestReview from '@/pages/doctor/TestReview';
 
 const DoctorDashboard = () => {
   const location = useLocation();
@@ -24,8 +25,8 @@ const DoctorDashboard = () => {
     { path: '/doctor', icon: LayoutDashboard, label: 'Dashboard', exact: true },
     { path: '/doctor/appointments', icon: Calendar, label: 'Appointments' },
     { path: '/doctor/patients', icon: Users, label: 'Patient History' },
-    { path: '/doctor/prescriptions', icon: FileText, label: 'Write Prescription' },
-    { path: '/doctor/schedule', icon: Clock, label: 'My Schedule' },
+    { path: '/doctor/tests', icon: TestTube, label: 'Test Review' },
+    { path: '/doctor/prescriptions', icon: Pill, label: 'Prescriptions' },
     { path: '/doctor/profile', icon: User, label: 'Profile' },
   ];
 
@@ -64,9 +65,9 @@ const DoctorDashboard = () => {
         <Route index element={<DoctorOverview />} />
         <Route path="appointments" element={<DoctorAppointments />} />
         <Route path="patients" element={<PatientHistory />} />
-        <Route path="prescriptions" element={<CreatePrescription />} />
-        <Route path="schedule" element={<div className="p-6"><h1 className="text-2xl font-bold">Schedule - Coming Soon</h1></div>} />
-        <Route path="profile" element={<div className="p-6"><h1 className="text-2xl font-bold">Profile - Coming Soon</h1></div>} />
+        <Route path="tests" element={<TestReview />} />
+        <Route path="prescriptions/*" element={<CreatePrescription />} />
+        <Route path="profile" element={<div className="p-6"><h1 className="text-2xl font-bold">Doctor Profile - Coming Soon</h1></div>} />
       </Routes>
     </DashboardLayout>
   );

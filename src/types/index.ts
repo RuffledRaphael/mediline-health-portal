@@ -27,6 +27,10 @@ export interface Doctor extends User {
   experience: number;
   consultationFee: number;
   availability: string[];
+  bio?: string;
+  rating?: number;
+  affiliatedCenters?: string[];
+  consultingAddress?: string;
 }
 
 export interface Hospital extends User {
@@ -76,16 +80,28 @@ export interface TestOrder {
   status: 'ordered' | 'completed' | 'pending';
 }
 
+export interface TestParameter {
+  name: string;
+  value: string;
+  unit: string;
+  normalRange: string;
+  isNormal: boolean;
+}
+
 export interface TestResult {
   id: string;
   patientId: string;
   testOrderId: string;
   hospitalId: string;
   testName: string;
+  testType: 'Pathology' | 'Imaging';
   date: string;
   result: string;
   reportUrl?: string;
   status: 'completed' | 'pending';
+  performedBy?: string;
+  parameters?: TestParameter[];
+  notes?: string;
 }
 
 export interface SymptomEntry {
