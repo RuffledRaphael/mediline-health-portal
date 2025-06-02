@@ -239,7 +239,7 @@ const PatientOverview = () => {
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
             <Button asChild className="h-20 flex-col bg-medical-600 hover:bg-medical-700">
               <Link to="/patient/doctors">
                 <Calendar className="w-6 h-6 mb-2" />
@@ -250,6 +250,12 @@ const PatientOverview = () => {
               <Link to="/patient/tests/request">
                 <TestTube className="w-6 h-6 mb-2" />
                 <span>Request Test</span>
+              </Link>
+            </Button>
+            <Button asChild variant="outline" className="h-20 flex-col">
+              <Link to="/patient/tests/requests-list">
+                <FileText className="w-6 h-6 mb-2" />
+                <span>My Test Requests</span>
               </Link>
             </Button>
             <Button asChild variant="outline" className="h-20 flex-col">

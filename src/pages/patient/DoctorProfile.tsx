@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
-import { mockDoctors, mockDoctorReviews } from '@/data/mockData';
+import { mockDoctors, mockDoctorReviews, mockDoctorAvailability } from '@/data/mockData';
 import { ArrowLeft, MapPin, Star, Clock, DollarSign, User, GraduationCap, Calendar } from 'lucide-react';
 
 const DoctorProfile = () => {
@@ -15,6 +15,7 @@ const DoctorProfile = () => {
 
   const doctor = mockDoctors.find(d => d.id === doctorId);
   const reviews = mockDoctorReviews[doctorId as keyof typeof mockDoctorReviews] || [];
+  const doctorSchedule = mockDoctorAvailability[doctorId as keyof typeof mockDoctorAvailability] || [];
 
   if (!doctor) {
     return (
@@ -34,6 +35,15 @@ const DoctorProfile = () => {
   const handleBookAppointment = () => {
     navigate(`/patient/book-appointment/${doctor.id}`);
   };
+
+  // Group schedule by location
+  const scheduleByLocation = doctorSchedule.reduce((acc, schedule) => {
+    if (!acc[schedule.location]) {
+      acc[schedule.location] = [];
+    }
+    acc[schedule.location].push(schedule);
+    return acc;
+  }, {} as Record<string, typeof doctorSchedule>);
 
   return (
     <div className="space-y-6">
@@ -137,7 +147,7 @@ const DoctorProfile = () => {
                 : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
             }`}
           >
-            Availability
+            Availability & Locations
           </button>
           <button
             onClick={() => setActiveTab('reviews')}
@@ -181,27 +191,55 @@ const DoctorProfile = () => {
       )}
 
       {activeTab === 'availability' && (
-        <Card>
-          <CardHeader>
-            <CardTitle>Available Days</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-              {doctor.availability.map((day) => (
-                <div key={day} className="flex items-center justify-center p-3 bg-medical-50 rounded-lg border">
-                  <span className="font-medium text-medical-700">{day}</span>
-                </div>
-              ))}
-            </div>
-            <Separator className="my-4" />
-            <p className="text-sm text-gray-600">
-              Typical consultation hours: 9:00 AM - 12:00 PM and 2:00 PM - 5:00 PM
-            </p>
-            <p className="text-sm text-gray-600 mt-2">
-              For specific time slots, please proceed to book an appointment.
-            </p>
-          </CardContent>
-        </Card>
+        <div className="space-y-6">
+          <Card>
+            <CardHeader>
+              <CardTitle>Schedule & Locations</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-6">
+                {Object.entries(scheduleByLocation).map(([location, schedules]) => (
+                  <div key={location} className="border rounded-lg p-4">
+                    <div className="flex items-start space-x-3 mb-4">
+                      <MapPin className="w-5 h-5 text-medical-600 mt-0.5" />
+                      <div>
+                        <h4 className="font-medium text-gray-900">{location}</h4>
+                        <p className="text-sm text-gray-500">Consultation Center</p>
+                      </div>
+                    </div>
+                    
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                      {schedules.map((schedule, index) => (
+                        <div key={index} className="flex items-center justify-between p-3 bg-medical-50 rounded-lg">
+                          <div className="flex items-center space-x-3">
+                            <Calendar className="w-4 h-4 text-medical-600" />
+                            <span className="font-medium text-medical-700">{schedule.day}</span>
+                          </div>
+                          <div className="flex items-center space-x-2">
+                            <Clock className="w-4 h-4 text-gray-500" />
+                            <span className="text-sm text-gray-600">{schedule.time}</span>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                ))}
+              </div>
+              
+              <Separator className="my-4" />
+              
+              <div className="bg-blue-50 p-4 rounded-lg">
+                <h4 className="font-medium text-blue-900 mb-2">Booking Information</h4>
+                <ul className="text-sm text-blue-700 space-y-1">
+                  <li>• Appointments can be booked up to 30 days in advance</li>
+                  <li>• Consultation fee: ${doctor.consultationFee}</li>
+                  <li>• Please arrive 15 minutes before your scheduled time</li>
+                  <li>• Cancellations must be made at least 24 hours in advance</li>
+                </ul>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
       )}
 
       {activeTab === 'reviews' && (

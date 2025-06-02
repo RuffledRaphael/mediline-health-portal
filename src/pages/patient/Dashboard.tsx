@@ -11,7 +11,8 @@ import {
   User, 
   Heart,
   TestTube,
-  Pill
+  Pill,
+  ClipboardList
 } from 'lucide-react';
 import PatientOverview from '@/pages/patient/Overview';
 import PatientProfile from '@/pages/patient/Profile';
@@ -24,6 +25,7 @@ import SymptomTracker from '@/pages/patient/SymptomTracker';
 import TestResults from '@/pages/patient/TestResults';
 import TestRequest from '@/pages/patient/TestRequest';
 import TestRequests from '@/pages/patient/TestRequests';
+import TestRequestsList from '@/pages/patient/TestRequestsList';
 
 const PatientDashboard = () => {
   const location = useLocation();
@@ -36,6 +38,7 @@ const PatientDashboard = () => {
     { path: '/patient/prescriptions', icon: Pill, label: 'Prescriptions' },
     { path: '/patient/tests', icon: TestTube, label: 'Tests & Results' },
     { path: '/patient/tests/request', icon: TestTube, label: 'Request Test' },
+    { path: '/patient/tests/requests-list', icon: ClipboardList, label: 'My Test Requests' },
     { path: '/patient/profile', icon: User, label: 'Profile' },
   ];
 
@@ -82,6 +85,7 @@ const PatientDashboard = () => {
         <Route path="tests" element={<TestResults />} />
         <Route path="tests/request" element={<TestRequest />} />
         <Route path="tests/requests" element={<TestRequests />} />
+        <Route path="tests/requests-list" element={<TestRequestsList />} />
       </Routes>
     </DashboardLayout>
   );

@@ -6,8 +6,9 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Textarea } from '@/components/ui/textarea';
 import { Calendar } from '@/components/ui/calendar';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { mockDoctors, mockTimeSlots, mockDoctorAvailability } from '@/data/mockData';
-import { ArrowLeft, User, MapPin, Clock, Calendar as CalendarIcon } from 'lucide-react';
+import { ArrowLeft, User, MapPin, Clock, Calendar as CalendarIcon, Filter } from 'lucide-react';
 import { format, addDays, isSameDay } from 'date-fns';
 import { useToast } from '@/hooks/use-toast';
 
@@ -39,25 +40,64 @@ const BookAppointment = () => {
   const today = new Date();
   const maxDate = addDays(today, 30);
 
+  // Get unique locations for the doctor
+  const availableLocations = [...new Set(doctorSchedule.map(schedule => schedule.location))];
+
+  // Filter schedule based on selected location
+  const filteredSchedule = selectedLocation 
+    ? doctorSchedule.filter(schedule => schedule.location === selectedLocation)
+    : doctorSchedule;
+
+  // Get available days based on location filter
+  const availableDays = selectedLocation 
+    ? [...new Set(filteredSchedule.map(schedule => schedule.day))]
+    : doctor.availability;
+
   const isDateDisabled = (date: Date) => {
     const dayName = format(date, 'EEEE');
-    return !doctor.availability.includes(dayName) || date < today;
+    return !availableDays.includes(dayName) || date < today;
   };
 
   const getAvailabilityForDate = (date: Date) => {
     const dayName = format(date, 'EEEE');
-    return doctorSchedule.filter(schedule => schedule.day === dayName);
+    return filteredSchedule.filter(schedule => schedule.day === dayName);
+  };
+
+  // Get time slots based on selected date and location
+  const getTimeSlots = () => {
+    if (!selectedDate) return [];
+    
+    const availabilityForDate = getAvailabilityForDate(selectedDate);
+    
+    if (selectedLocation) {
+      const locationSchedule = availabilityForDate.find(schedule => schedule.location === selectedLocation);
+      return locationSchedule ? mockTimeSlots.slice(0, 6) : [];
+    }
+    
+    return availabilityForDate.length > 0 ? mockTimeSlots.slice(0, 6) : [];
   };
 
   const handleDateSelect = (date: Date | undefined) => {
     setSelectedDate(date);
     setSelectedTime('');
-    setSelectedLocation('');
+    
+    // If a location is not selected and date is selected, show available locations for that date
+    if (date && !selectedLocation) {
+      const availabilityForDate = getAvailabilityForDate(date);
+      if (availabilityForDate.length === 1) {
+        setSelectedLocation(availabilityForDate[0].location);
+      }
+    }
   };
 
-  const handleTimeLocationSelect = (time: string, location: string) => {
-    setSelectedTime(time);
+  const handleLocationSelect = (location: string) => {
     setSelectedLocation(location);
+    setSelectedDate(undefined);
+    setSelectedTime('');
+  };
+
+  const handleTimeSelect = (time: string) => {
+    setSelectedTime(time);
   };
 
   const handleBookAppointment = async () => {
@@ -144,17 +184,13 @@ const BookAppointment = () => {
               </p>
             </div>
 
-            {/* Doctor's Schedule */}
+            {/* Available Locations */}
             <div className="mt-4">
-              <h4 className="font-medium text-gray-900 mb-2">Weekly Schedule</h4>
+              <h4 className="font-medium text-gray-900 mb-2">Available Locations</h4>
               <div className="space-y-2 text-sm">
-                {doctorSchedule.map((schedule, index) => (
-                  <div key={index} className="flex justify-between items-center py-1">
-                    <span className="font-medium">{schedule.day}</span>
-                    <div className="text-right">
-                      <div className="text-gray-600">{schedule.time}</div>
-                      <div className="text-xs text-gray-500">{schedule.location}</div>
-                    </div>
+                {availableLocations.map((location, index) => (
+                  <div key={index} className="p-2 bg-gray-50 rounded text-gray-700">
+                    {location}
                   </div>
                 ))}
               </div>
@@ -165,54 +201,72 @@ const BookAppointment = () => {
         {/* Booking Form */}
         <Card className="lg:col-span-2">
           <CardHeader>
-            <CardTitle>Select Date & Time</CardTitle>
+            <CardTitle className="flex items-center">
+              <Filter className="w-5 h-5 mr-2" />
+              Select Location, Date & Time
+            </CardTitle>
           </CardHeader>
           <CardContent className="space-y-6">
-            {/* Date Selection */}
+            {/* Location Filter */}
             <div>
-              <h4 className="font-medium text-gray-900 mb-3">Choose Date</h4>
-              <div className="flex justify-center">
-                <Calendar
-                  mode="single"
-                  selected={selectedDate}
-                  onSelect={handleDateSelect}
-                  disabled={isDateDisabled}
-                  fromDate={today}
-                  toDate={maxDate}
-                  className="rounded-md border"
-                />
-              </div>
+              <h4 className="font-medium text-gray-900 mb-3">Choose Location</h4>
+              <Select value={selectedLocation} onValueChange={handleLocationSelect}>
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder="Select a location" />
+                </SelectTrigger>
+                <SelectContent>
+                  {availableLocations.map((location) => (
+                    <SelectItem key={location} value={location}>{location}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
 
-            {/* Time & Location Selection */}
-            {selectedDate && availabilityForSelectedDate.length > 0 && (
+            {/* Date Selection */}
+            {availableLocations.length > 0 && (
               <div>
-                <h4 className="font-medium text-gray-900 mb-3">Choose Time & Location</h4>
-                <div className="space-y-3">
-                  {availabilityForSelectedDate.map((availability, index) => (
-                    <div key={index} className="border rounded-lg p-4">
-                      <div className="flex items-center justify-between mb-3">
-                        <div>
-                          <h5 className="font-medium text-gray-900">{availability.location}</h5>
-                          <p className="text-sm text-gray-600">{availability.time}</p>
-                        </div>
-                      </div>
-                      <div className="grid grid-cols-3 gap-2">
-                        {mockTimeSlots.slice(0, 6).map((time) => (
-                          <Button
-                            key={`${availability.location}-${time}`}
-                            variant={selectedTime === time && selectedLocation === availability.location ? "default" : "outline"}
-                            size="sm"
-                            onClick={() => handleTimeLocationSelect(time, availability.location)}
-                            className={selectedTime === time && selectedLocation === availability.location ? "bg-medical-600 hover:bg-medical-700" : ""}
-                          >
-                            {time}
-                          </Button>
-                        ))}
-                      </div>
-                    </div>
+                <h4 className="font-medium text-gray-900 mb-3">Choose Date</h4>
+                <div className="flex justify-center">
+                  <Calendar
+                    mode="single"
+                    selected={selectedDate}
+                    onSelect={handleDateSelect}
+                    disabled={isDateDisabled}
+                    fromDate={today}
+                    toDate={maxDate}
+                    className="rounded-md border"
+                  />
+                </div>
+                {selectedLocation && (
+                  <p className="text-sm text-gray-600 mt-2 text-center">
+                    Available days for {selectedLocation}: {availableDays.join(', ')}
+                  </p>
+                )}
+              </div>
+            )}
+
+            {/* Time Selection */}
+            {selectedDate && selectedLocation && (
+              <div>
+                <h4 className="font-medium text-gray-900 mb-3">Choose Time</h4>
+                <div className="grid grid-cols-3 gap-2">
+                  {getTimeSlots().map((time) => (
+                    <Button
+                      key={time}
+                      variant={selectedTime === time ? "default" : "outline"}
+                      size="sm"
+                      onClick={() => handleTimeSelect(time)}
+                      className={selectedTime === time ? "bg-medical-600 hover:bg-medical-700" : ""}
+                    >
+                      {time}
+                    </Button>
                   ))}
                 </div>
+                {getTimeSlots().length === 0 && (
+                  <p className="text-sm text-gray-500 text-center py-4">
+                    No available time slots for the selected date and location.
+                  </p>
+                )}
               </div>
             )}
 
