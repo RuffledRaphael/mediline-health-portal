@@ -9,8 +9,9 @@ import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { TestTube, User, Calendar, Clock, CheckCircle, XCircle } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { TestRequest } from '@/types/testRequest';
 
-const mockIncomingRequests = [
+const mockIncomingRequests: TestRequest[] = [
   {
     id: '1',
     patientName: 'John Smith',
@@ -49,8 +50,8 @@ const mockIncomingRequests = [
 ];
 
 const HospitalTestRequests = () => {
-  const [requests, setRequests] = useState(mockIncomingRequests);
-  const [selectedRequest, setSelectedRequest] = useState(null);
+  const [requests, setRequests] = useState<TestRequest[]>(mockIncomingRequests);
+  const [selectedRequest, setSelectedRequest] = useState<TestRequest | null>(null);
   const [isApprovalModalOpen, setIsApprovalModalOpen] = useState(false);
   const [finalDate, setFinalDate] = useState('');
   const [finalTime, setFinalTime] = useState('');
@@ -69,10 +70,10 @@ const HospitalTestRequests = () => {
 
     setRequests(prev => 
       prev.map(req => 
-        req.id === selectedRequest.id 
+        req.id === selectedRequest?.id 
           ? { 
               ...req, 
-              status: 'approved', 
+              status: 'approved' as const, 
               approvedDate: new Date().toISOString().split('T')[0],
               finalDate,
               finalTime 
@@ -83,7 +84,7 @@ const HospitalTestRequests = () => {
 
     toast({
       title: "Test Request Approved",
-      description: `${selectedRequest.testType} for ${selectedRequest.patientName} has been scheduled for ${finalDate} at ${finalTime}.`,
+      description: `${selectedRequest?.testType} for ${selectedRequest?.patientName} has been scheduled for ${finalDate} at ${finalTime}.`,
     });
 
     setIsApprovalModalOpen(false);
@@ -91,11 +92,11 @@ const HospitalTestRequests = () => {
     setFinalTime('');
   };
 
-  const handleReject = (requestId, reason) => {
+  const handleReject = (requestId: string, reason: string) => {
     setRequests(prev => 
       prev.map(req => 
         req.id === requestId 
-          ? { ...req, status: 'rejected', rejectionReason: reason }
+          ? { ...req, status: 'rejected' as const, rejectionReason: reason }
           : req
       )
     );
@@ -103,7 +104,7 @@ const HospitalTestRequests = () => {
     const request = requests.find(r => r.id === requestId);
     toast({
       title: "Test Request Rejected",
-      description: `${request.testType} for ${request.patientName} has been rejected.`,
+      description: `${request?.testType} for ${request?.patientName} has been rejected.`,
     });
   };
 
