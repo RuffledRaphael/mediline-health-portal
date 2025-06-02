@@ -1,4 +1,3 @@
-
 import { Patient, Doctor, Hospital, Appointment, Prescription, TestResult, SymptomEntry } from '@/types';
 
 export const mockPatients: Patient[] = [
@@ -297,5 +296,38 @@ export const mockHealthMetrics = {
     { date: '2024-04-01', value: 72 },
     { date: '2024-05-01', value: 70 },
     { date: '2024-06-01', value: 68 },
+  ],
+};
+
+export const mockDoctorAvailability = {
+  '2': [
+    { day: 'Monday', time: '9:00 AM – 12:00 PM', location: 'City General Hospital' },
+    { day: 'Tuesday', time: '2:00 PM – 6:00 PM', location: 'Heart Care Institute' },
+    { day: 'Wednesday', time: '9:00 AM – 1:00 PM', location: 'City General Hospital' },
+    { day: 'Friday', time: '3:00 PM – 7:00 PM', location: 'Heart Care Institute' },
+  ],
+  '3': [
+    { day: 'Monday', time: '10:00 AM – 2:00 PM', location: 'Metro Health Center' },
+    { day: 'Wednesday', time: '3:00 PM – 6:00 PM', location: 'Skin Care Clinic' },
+    { day: 'Thursday', time: '9:00 AM – 12:00 PM', location: 'Metro Health Center' },
+    { day: 'Saturday', time: '10:00 AM – 1:00 PM', location: 'Skin Care Clinic' },
+  ],
+  '4': [
+    { day: 'Tuesday', time: '8:00 AM – 12:00 PM', location: "Children's Medical Center" },
+    { day: 'Wednesday', time: '2:00 PM – 6:00 PM', location: "Children's Medical Center" },
+    { day: 'Thursday', time: '9:00 AM – 1:00 PM', location: "Children's Medical Center" },
+    { day: 'Friday', time: '3:00 PM – 5:00 PM', location: "Children's Medical Center" },
+  ],
+  '5': [
+    { day: 'Monday', time: '7:00 AM – 11:00 AM', location: 'Sports Medicine Institute' },
+    { day: 'Tuesday', time: '1:00 PM – 5:00 PM', location: 'Orthopedic Center' },
+    { day: 'Thursday', time: '8:00 AM – 12:00 PM', location: 'Sports Medicine Institute' },
+    { day: 'Friday', time: '2:00 PM – 6:00 PM', location: 'Orthopedic Center' },
+  ],
+  '6': [
+    { day: 'Wednesday', time: '9:00 AM – 1:00 PM', location: 'Brain & Spine Center' },
+    { day: 'Thursday', time: '2:00 PM – 6:00 PM', location: 'Neurology Institute' },
+    { day: 'Friday', time: '10:00 AM – 2:00 PM', location: 'Brain & Spine Center' },
+    { day: 'Saturday', time: '9:00 AM – 12:00 PM', location: 'Neurology Institute' },
   ],
 };

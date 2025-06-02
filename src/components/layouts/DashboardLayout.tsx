@@ -12,6 +12,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { LogOut, User } from 'lucide-react';
+import NotificationPanel from '@/components/patient/NotificationPanel';
 
 interface DashboardLayoutProps {
   children: React.ReactNode;
@@ -38,6 +39,9 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children, sidebar }) 
           </div>
           
           <div className="flex items-center space-x-4">
+            {/* Show notifications only for patients */}
+            {user?.type === 'patient' && <NotificationPanel />}
+            
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" className="relative h-10 w-10 rounded-full">

@@ -8,6 +8,7 @@ import { mockAppointments, mockPrescriptions, mockTestResults, mockDoctors } fro
 import { Calendar, Clock, User, FileText, TestTube, Heart, Activity } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import HealthMetricsCarousel from '@/components/patient/HealthMetricsCarousel';
+import DailyMedications from '@/components/patient/DailyMedications';
 
 const PatientOverview = () => {
   const { user } = useAuth();
@@ -94,6 +95,9 @@ const PatientOverview = () => {
           </CardContent>
         </Card>
       </div>
+
+      {/* Daily Medications */}
+      <DailyMedications />
 
       {/* Health Metrics Carousel */}
       <Card>

@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Textarea } from '@/components/ui/textarea';
 import { Calendar } from '@/components/ui/calendar';
-import { mockDoctors, mockTimeSlots } from '@/data/mockData';
+import { mockDoctors, mockTimeSlots, mockDoctorAvailability } from '@/data/mockData';
 import { ArrowLeft, User, MapPin, Clock, Calendar as CalendarIcon } from 'lucide-react';
 import { format, addDays, isSameDay } from 'date-fns';
 import { useToast } from '@/hooks/use-toast';
@@ -18,10 +18,12 @@ const BookAppointment = () => {
   
   const [selectedDate, setSelectedDate] = useState<Date>();
   const [selectedTime, setSelectedTime] = useState<string>('');
+  const [selectedLocation, setSelectedLocation] = useState<string>('');
   const [reason, setReason] = useState('');
   const [isBooking, setIsBooking] = useState(false);
 
   const doctor = mockDoctors.find(d => d.id === doctorId);
+  const doctorSchedule = mockDoctorAvailability[doctorId as keyof typeof mockDoctorAvailability] || [];
 
   if (!doctor) {
     return (
@@ -35,18 +37,34 @@ const BookAppointment = () => {
   }
 
   const today = new Date();
-  const maxDate = addDays(today, 30); // Allow booking up to 30 days in advance
+  const maxDate = addDays(today, 30);
 
   const isDateDisabled = (date: Date) => {
     const dayName = format(date, 'EEEE');
     return !doctor.availability.includes(dayName) || date < today;
   };
 
+  const getAvailabilityForDate = (date: Date) => {
+    const dayName = format(date, 'EEEE');
+    return doctorSchedule.filter(schedule => schedule.day === dayName);
+  };
+
+  const handleDateSelect = (date: Date | undefined) => {
+    setSelectedDate(date);
+    setSelectedTime('');
+    setSelectedLocation('');
+  };
+
+  const handleTimeLocationSelect = (time: string, location: string) => {
+    setSelectedTime(time);
+    setSelectedLocation(location);
+  };
+
   const handleBookAppointment = async () => {
-    if (!selectedDate || !selectedTime) {
+    if (!selectedDate || !selectedTime || !selectedLocation) {
       toast({
         title: "Missing Information",
-        description: "Please select both date and time for your appointment.",
+        description: "Please select date, time, and location for your appointment.",
         variant: "destructive",
       });
       return;
@@ -54,17 +72,18 @@ const BookAppointment = () => {
 
     setIsBooking(true);
     
-    // Simulate API call
     await new Promise(resolve => setTimeout(resolve, 1500));
     
     toast({
       title: "Appointment Booked Successfully!",
-      description: `Your appointment with ${doctor.name} is confirmed for ${format(selectedDate, 'PPP')} at ${selectedTime}.`,
+      description: `Your appointment with ${doctor.name} is confirmed for ${format(selectedDate, 'PPP')} at ${selectedTime} at ${selectedLocation}.`,
     });
     
     setIsBooking(false);
     navigate('/patient/appointments');
   };
+
+  const availabilityForSelectedDate = selectedDate ? getAvailabilityForDate(selectedDate) : [];
 
   return (
     <div className="space-y-6">
@@ -124,6 +143,22 @@ const BookAppointment = () => {
                 Consultation Fee: ${doctor.consultationFee}
               </p>
             </div>
+
+            {/* Doctor's Schedule */}
+            <div className="mt-4">
+              <h4 className="font-medium text-gray-900 mb-2">Weekly Schedule</h4>
+              <div className="space-y-2 text-sm">
+                {doctorSchedule.map((schedule, index) => (
+                  <div key={index} className="flex justify-between items-center py-1">
+                    <span className="font-medium">{schedule.day}</span>
+                    <div className="text-right">
+                      <div className="text-gray-600">{schedule.time}</div>
+                      <div className="text-xs text-gray-500">{schedule.location}</div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
           </CardContent>
         </Card>
 
@@ -140,33 +175,42 @@ const BookAppointment = () => {
                 <Calendar
                   mode="single"
                   selected={selectedDate}
-                  onSelect={setSelectedDate}
+                  onSelect={handleDateSelect}
                   disabled={isDateDisabled}
                   fromDate={today}
                   toDate={maxDate}
                   className="rounded-md border"
                 />
               </div>
-              <p className="text-sm text-gray-600 mt-2 text-center">
-                Available on: {doctor.availability.join(', ')}
-              </p>
             </div>
 
-            {/* Time Selection */}
-            {selectedDate && (
+            {/* Time & Location Selection */}
+            {selectedDate && availabilityForSelectedDate.length > 0 && (
               <div>
-                <h4 className="font-medium text-gray-900 mb-3">Choose Time</h4>
-                <div className="grid grid-cols-3 md:grid-cols-4 gap-3">
-                  {mockTimeSlots.map((time) => (
-                    <Button
-                      key={time}
-                      variant={selectedTime === time ? "default" : "outline"}
-                      size="sm"
-                      onClick={() => setSelectedTime(time)}
-                      className={selectedTime === time ? "bg-medical-600 hover:bg-medical-700" : ""}
-                    >
-                      {time}
-                    </Button>
+                <h4 className="font-medium text-gray-900 mb-3">Choose Time & Location</h4>
+                <div className="space-y-3">
+                  {availabilityForSelectedDate.map((availability, index) => (
+                    <div key={index} className="border rounded-lg p-4">
+                      <div className="flex items-center justify-between mb-3">
+                        <div>
+                          <h5 className="font-medium text-gray-900">{availability.location}</h5>
+                          <p className="text-sm text-gray-600">{availability.time}</p>
+                        </div>
+                      </div>
+                      <div className="grid grid-cols-3 gap-2">
+                        {mockTimeSlots.slice(0, 6).map((time) => (
+                          <Button
+                            key={`${availability.location}-${time}`}
+                            variant={selectedTime === time && selectedLocation === availability.location ? "default" : "outline"}
+                            size="sm"
+                            onClick={() => handleTimeLocationSelect(time, availability.location)}
+                            className={selectedTime === time && selectedLocation === availability.location ? "bg-medical-600 hover:bg-medical-700" : ""}
+                          >
+                            {time}
+                          </Button>
+                        ))}
+                      </div>
+                    </div>
                   ))}
                 </div>
               </div>
@@ -184,7 +228,7 @@ const BookAppointment = () => {
             </div>
 
             {/* Summary */}
-            {selectedDate && selectedTime && (
+            {selectedDate && selectedTime && selectedLocation && (
               <div className="p-4 bg-gray-50 rounded-lg">
                 <h4 className="font-medium text-gray-900 mb-2">Appointment Summary</h4>
                 <div className="space-y-1 text-sm text-gray-600">
@@ -202,7 +246,7 @@ const BookAppointment = () => {
                   </div>
                   <div className="flex items-center">
                     <MapPin className="w-4 h-4 mr-2" />
-                    {doctor.hospital}
+                    {selectedLocation}
                   </div>
                 </div>
               </div>
@@ -213,7 +257,7 @@ const BookAppointment = () => {
               size="lg"
               className="w-full bg-medical-600 hover:bg-medical-700"
               onClick={handleBookAppointment}
-              disabled={!selectedDate || !selectedTime || isBooking}
+              disabled={!selectedDate || !selectedTime || !selectedLocation || isBooking}
             >
               {isBooking ? 'Booking...' : 'Confirm Appointment'}
             </Button>
