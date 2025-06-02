@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -8,7 +8,8 @@ import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useToast } from '@/hooks/use-toast';
 import { mockPatients } from '@/data/mockData';
-import { Plus, Trash2, FileText, User, Pill, TestTube } from 'lucide-react';
+import { useSearchParams } from 'react-router-dom';
+import { Plus, Trash2, FileText, User, Pill, TestTube, Heart } from 'lucide-react';
 
 interface Medication {
   id: string;
@@ -25,13 +26,40 @@ interface TestOrder {
   reason: string;
 }
 
+interface HealthVitals {
+  heartRate: string;
+  bloodPressureSystolic: string;
+  bloodPressureDiastolic: string;
+  weight: string;
+  height: string;
+  temperature: string;
+  oxygenSaturation: string;
+}
+
 const CreatePrescription = () => {
   const { toast } = useToast();
+  const [searchParams] = useSearchParams();
   const [selectedPatient, setSelectedPatient] = useState('');
   const [diagnosis, setDiagnosis] = useState('');
   const [notes, setNotes] = useState('');
   const [medications, setMedications] = useState<Medication[]>([]);
   const [testOrders, setTestOrders] = useState<TestOrder[]>([]);
+  const [healthVitals, setHealthVitals] = useState<HealthVitals>({
+    heartRate: '',
+    bloodPressureSystolic: '',
+    bloodPressureDiastolic: '',
+    weight: '',
+    height: '',
+    temperature: '',
+    oxygenSaturation: ''
+  });
+
+  useEffect(() => {
+    const patientId = searchParams.get('patientId');
+    if (patientId) {
+      setSelectedPatient(patientId);
+    }
+  }, [searchParams]);
 
   const addMedication = () => {
     const newMedication: Medication = {
@@ -74,6 +102,10 @@ const CreatePrescription = () => {
     ));
   };
 
+  const updateHealthVital = (field: keyof HealthVitals, value: string) => {
+    setHealthVitals(prev => ({ ...prev, [field]: value }));
+  };
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
@@ -107,6 +139,15 @@ const CreatePrescription = () => {
     setNotes('');
     setMedications([]);
     setTestOrders([]);
+    setHealthVitals({
+      heartRate: '',
+      bloodPressureSystolic: '',
+      bloodPressureDiastolic: '',
+      weight: '',
+      height: '',
+      temperature: '',
+      oxygenSaturation: ''
+    });
   };
 
   return (
@@ -160,6 +201,93 @@ const CreatePrescription = () => {
                   })()}
                 </div>
               )}
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Health Vitals */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center">
+              <Heart className="w-5 h-5 mr-2 text-medical-600" />
+              Health Vitals
+            </CardTitle>
+            <CardDescription>
+              Record patient's current vital signs
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4">
+              <div>
+                <Label htmlFor="heartRate">Heart Rate (bpm)</Label>
+                <Input
+                  id="heartRate"
+                  type="number"
+                  value={healthVitals.heartRate}
+                  onChange={(e) => updateHealthVital('heartRate', e.target.value)}
+                  placeholder="e.g., 72"
+                />
+              </div>
+              <div>
+                <Label htmlFor="bloodPressure">Blood Pressure (mmHg)</Label>
+                <div className="flex space-x-2">
+                  <Input
+                    type="number"
+                    value={healthVitals.bloodPressureSystolic}
+                    onChange={(e) => updateHealthVital('bloodPressureSystolic', e.target.value)}
+                    placeholder="120"
+                  />
+                  <span className="flex items-center text-gray-500">/</span>
+                  <Input
+                    type="number"
+                    value={healthVitals.bloodPressureDiastolic}
+                    onChange={(e) => updateHealthVital('bloodPressureDiastolic', e.target.value)}
+                    placeholder="80"
+                  />
+                </div>
+              </div>
+              <div>
+                <Label htmlFor="weight">Weight (kg)</Label>
+                <Input
+                  id="weight"
+                  type="number"
+                  step="0.1"
+                  value={healthVitals.weight}
+                  onChange={(e) => updateHealthVital('weight', e.target.value)}
+                  placeholder="e.g., 70.5"
+                />
+              </div>
+              <div>
+                <Label htmlFor="height">Height (cm)</Label>
+                <Input
+                  id="height"
+                  type="number"
+                  value={healthVitals.height}
+                  onChange={(e) => updateHealthVital('height', e.target.value)}
+                  placeholder="e.g., 175"
+                />
+              </div>
+              <div>
+                <Label htmlFor="temperature">Temperature (°C)</Label>
+                <Input
+                  id="temperature"
+                  type="number"
+                  step="0.1"
+                  value={healthVitals.temperature}
+                  onChange={(e) => updateHealthVital('temperature', e.target.value)}
+                  placeholder="e.g., 37.0"
+                />
+              </div>
+              <div>
+                <Label htmlFor="oxygenSaturation">Oxygen Saturation (%)</Label>
+                <Input
+                  id="oxygenSaturation"
+                  type="number"
+                  value={healthVitals.oxygenSaturation}
+                  onChange={(e) => updateHealthVital('oxygenSaturation', e.target.value)}
+                  placeholder="e.g., 98"
+                />
+              </div>
             </div>
           </CardContent>
         </Card>

@@ -53,7 +53,7 @@ const PatientMedicalHistory = () => {
           </div>
         </div>
         <div className="flex space-x-2">
-          <Link to={`/doctor/patient/${patientId}/prescribe`}>
+          <Link to={`/doctor/prescriptions/create?patientId=${patientId}`}>
             <Button className="bg-medical-600 hover:bg-medical-700">
               <Pill className="w-4 h-4 mr-2" />
               Write Prescription
@@ -116,9 +116,11 @@ const PatientMedicalHistory = () => {
                           {prescription.date}
                         </p>
                       </div>
-                      <Button size="sm" variant="outline">
-                        View Full
-                      </Button>
+                      <Link to={`/doctor/prescription/${prescription.id}/view`}>
+                        <Button size="sm" variant="outline" className="hover:bg-medical-50">
+                          View Full
+                        </Button>
+                      </Link>
                     </div>
                     
                     <div className="space-y-2">
@@ -164,7 +166,12 @@ const PatientMedicalHistory = () => {
                   <div key={test.id} className="border rounded-lg p-4">
                     <div className="flex items-start justify-between mb-3">
                       <div>
-                        <p className="font-medium text-gray-900">{test.testName}</p>
+                        <Link 
+                          to={`/doctor/test-result/${test.id}/view`}
+                          className="font-medium text-gray-900 hover:text-medical-600 transition-colors cursor-pointer"
+                        >
+                          {test.testName}
+                        </Link>
                         <p className="text-sm text-gray-600">{test.date}</p>
                         <Badge 
                           variant={test.status === 'completed' ? 'default' : 'secondary'}

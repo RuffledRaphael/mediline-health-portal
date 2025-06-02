@@ -4,8 +4,9 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Calendar, Clock, User, X, XCircle } from 'lucide-react';
+import { Calendar, Clock, User, X, XCircle, Pill } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { Link } from 'react-router-dom';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
 
 const DoctorAppointments = () => {
@@ -136,7 +137,12 @@ const DoctorAppointments = () => {
               </div>
               
               <div className="flex-1">
-                <h3 className="text-lg font-semibold text-gray-900">{appointment.patientName}</h3>
+                <Link 
+                  to={`/doctor/patient/${appointment.patientId}/history`}
+                  className="text-lg font-semibold text-gray-900 hover:text-medical-600 transition-colors"
+                >
+                  {appointment.patientName}
+                </Link>
                 <p className="text-sm text-gray-600">Patient ID: {appointment.patientId}</p>
                 
                 <div className="flex items-center space-x-4 mt-3">
@@ -164,33 +170,43 @@ const DoctorAppointments = () => {
             <div className="flex flex-col items-end space-y-2">
               {getStatusBadge(appointment.status)}
               
-              {showActions && appointment.status === 'scheduled' && (
-                <AlertDialog>
-                  <AlertDialogTrigger asChild>
-                    <Button size="sm" variant="destructive">
-                      <X className="w-3 h-3 mr-1" />
-                      Cancel
-                    </Button>
-                  </AlertDialogTrigger>
-                  <AlertDialogContent>
-                    <AlertDialogHeader>
-                      <AlertDialogTitle>Cancel Appointment</AlertDialogTitle>
-                      <AlertDialogDescription>
-                        Are you sure you want to cancel the appointment with {appointment.patientName} on {appointment.date} at {appointment.time}?
-                      </AlertDialogDescription>
-                    </AlertDialogHeader>
-                    <AlertDialogFooter>
-                      <AlertDialogCancel>Keep Appointment</AlertDialogCancel>
-                      <AlertDialogAction 
-                        onClick={() => handleCancelAppointment(appointment.id)}
-                        className="bg-red-600 hover:bg-red-700"
-                      >
-                        Cancel Appointment
-                      </AlertDialogAction>
-                    </AlertDialogFooter>
-                  </AlertDialogContent>
-                </AlertDialog>
-              )}
+              <div className="flex space-x-2">
+                {showActions && appointment.status === 'scheduled' && (
+                  <>
+                    <Link to={`/doctor/prescriptions/create?patientId=${appointment.patientId}`}>
+                      <Button size="sm" className="bg-medical-600 hover:bg-medical-700">
+                        <Pill className="w-3 h-3 mr-1" />
+                        Prescribe
+                      </Button>
+                    </Link>
+                    <AlertDialog>
+                      <AlertDialogTrigger asChild>
+                        <Button size="sm" variant="destructive">
+                          <X className="w-3 h-3 mr-1" />
+                          Cancel
+                        </Button>
+                      </AlertDialogTrigger>
+                      <AlertDialogContent>
+                        <AlertDialogHeader>
+                          <AlertDialogTitle>Cancel Appointment</AlertDialogTitle>
+                          <AlertDialogDescription>
+                            Are you sure you want to cancel the appointment with {appointment.patientName} on {appointment.date} at {appointment.time}?
+                          </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                          <AlertDialogCancel>Keep Appointment</AlertDialogCancel>
+                          <AlertDialogAction 
+                            onClick={() => handleCancelAppointment(appointment.id)}
+                            className="bg-red-600 hover:bg-red-700"
+                          >
+                            Cancel Appointment
+                          </AlertDialogAction>
+                        </AlertDialogFooter>
+                      </AlertDialogContent>
+                    </AlertDialog>
+                  </>
+                )}
+              </div>
             </div>
           </div>
         </CardContent>

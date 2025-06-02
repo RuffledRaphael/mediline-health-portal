@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -10,6 +10,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { TestTube, MapPin, Star, Calendar, Clock } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { useSearchParams } from 'react-router-dom';
 
 const availableTests = [
   'Complete Blood Count (CBC)',
@@ -53,6 +54,7 @@ const mockHospitals = [
 ];
 
 const TestRequest = () => {
+  const [searchParams] = useSearchParams();
   const [selectedTest, setSelectedTest] = useState('');
   const [selectedHospital, setSelectedHospital] = useState(null);
   const [selectedDate, setSelectedDate] = useState('');
@@ -60,6 +62,13 @@ const TestRequest = () => {
   const [notes, setNotes] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const { toast } = useToast();
+
+  useEffect(() => {
+    const preselected = searchParams.get('preselected');
+    if (preselected && availableTests.includes(preselected)) {
+      setSelectedTest(preselected);
+    }
+  }, [searchParams]);
 
   const filteredHospitals = selectedTest 
     ? mockHospitals.filter(hospital => 
