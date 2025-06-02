@@ -22,6 +22,8 @@ import PatientAppointments from '@/pages/patient/Appointments';
 import PatientPrescriptions from '@/pages/patient/Prescriptions';
 import SymptomTracker from '@/pages/patient/SymptomTracker';
 import TestResults from '@/pages/patient/TestResults';
+import TestRequest from '@/pages/patient/TestRequest';
+import TestRequests from '@/pages/patient/TestRequests';
 
 const PatientDashboard = () => {
   const location = useLocation();
@@ -32,7 +34,7 @@ const PatientDashboard = () => {
     { path: '/patient/doctors', icon: Search, label: 'Find Doctors' },
     { path: '/patient/appointments', icon: Calendar, label: 'Appointments' },
     { path: '/patient/prescriptions', icon: Pill, label: 'Prescriptions' },
-    { path: '/patient/tests', icon: TestTube, label: 'Test Results' },
+    { path: '/patient/tests', icon: TestTube, label: 'Tests & Results' },
     { path: '/patient/profile', icon: User, label: 'Profile' },
   ];
 
@@ -77,6 +79,8 @@ const PatientDashboard = () => {
         <Route path="prescriptions" element={<PatientPrescriptions />} />
         <Route path="symptoms" element={<SymptomTracker />} />
         <Route path="tests" element={<TestResults />} />
+        <Route path="tests/request" element={<TestRequest />} />
+        <Route path="tests/requests" element={<TestRequests />} />
       </Routes>
     </DashboardLayout>
   );

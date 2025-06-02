@@ -13,6 +13,8 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { LogOut, User } from 'lucide-react';
 import NotificationPanel from '@/components/patient/NotificationPanel';
+import DoctorNotificationPanel from '@/components/doctor/DoctorNotificationPanel';
+import HospitalNotificationPanel from '@/components/hospital/HospitalNotificationPanel';
 
 interface DashboardLayoutProps {
   children: React.ReactNode;
@@ -21,6 +23,19 @@ interface DashboardLayoutProps {
 
 const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children, sidebar }) => {
   const { user, logout } = useAuth();
+
+  const getNotificationComponent = () => {
+    switch (user?.type) {
+      case 'patient':
+        return <NotificationPanel />;
+      case 'doctor':
+        return <DoctorNotificationPanel />;
+      case 'hospital':
+        return <HospitalNotificationPanel />;
+      default:
+        return null;
+    }
+  };
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -39,8 +54,8 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children, sidebar }) 
           </div>
           
           <div className="flex items-center space-x-4">
-            {/* Show notifications only for patients */}
-            {user?.type === 'patient' && <NotificationPanel />}
+            {/* Show notifications for all user types */}
+            {getNotificationComponent()}
             
             <DropdownMenu>
               <DropdownMenuTrigger asChild>

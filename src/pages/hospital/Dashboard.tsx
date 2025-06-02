@@ -9,17 +9,22 @@ import {
   FileText, 
   Users, 
   Building2,
-  TestTube
+  TestTube,
+  Clock
 } from 'lucide-react';
 import HospitalOverview from '@/pages/hospital/Overview';
 import TestUpload from '@/pages/hospital/TestUpload';
 import RecentUploads from '@/pages/hospital/RecentUploads';
+import HospitalTestRequests from '@/pages/hospital/TestRequests';
+import PendingUploads from '@/pages/hospital/PendingUploads';
 
 const HospitalDashboard = () => {
   const location = useLocation();
 
   const navigationItems = [
     { path: '/hospital', icon: LayoutDashboard, label: 'Dashboard', exact: true },
+    { path: '/hospital/test-requests', icon: TestTube, label: 'Test Requests' },
+    { path: '/hospital/pending-uploads', icon: Clock, label: 'Pending Uploads' },
     { path: '/hospital/upload', icon: Upload, label: 'Upload Test Results' },
     { path: '/hospital/uploads', icon: FileText, label: 'Recent Uploads' },
     { path: '/hospital/patients', icon: Users, label: 'Patient Search' },
@@ -59,6 +64,8 @@ const HospitalDashboard = () => {
     <DashboardLayout sidebar={sidebar}>
       <Routes>
         <Route index element={<HospitalOverview />} />
+        <Route path="test-requests" element={<HospitalTestRequests />} />
+        <Route path="pending-uploads" element={<PendingUploads />} />
         <Route path="upload" element={<TestUpload />} />
         <Route path="uploads" element={<RecentUploads />} />
         <Route path="patients" element={<div className="p-6"><h1 className="text-2xl font-bold">Patient Search - Coming Soon</h1></div>} />

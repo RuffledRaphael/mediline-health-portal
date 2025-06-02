@@ -6,10 +6,12 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { mockAppointments, mockPatients } from '@/data/mockData';
-import { Calendar, Clock, User, Phone, FileText, Pill } from 'lucide-react';
+import { Calendar, Clock, User, Phone, FileText, Pill, XCircle } from 'lucide-react';
+import { useToast } from '@/hooks/use-toast';
 
 const DoctorAppointments = () => {
-  const [appointments] = useState(mockAppointments);
+  const [appointments, setAppointments] = useState(mockAppointments);
+  const { toast } = useToast();
 
   const today = new Date().toISOString().split('T')[0];
   const todaysAppointments = appointments.filter(apt => apt.date === today);
@@ -18,6 +20,24 @@ const DoctorAppointments = () => {
 
   const handleStartConsultation = (appointmentId: string) => {
     console.log('Starting consultation for appointment:', appointmentId);
+  };
+
+  const handleCancelAppointment = (appointmentId: string) => {
+    setAppointments(prev => 
+      prev.map(apt => 
+        apt.id === appointmentId 
+          ? { ...apt, status: 'cancelled' }
+          : apt
+      )
+    );
+
+    const appointment = appointments.find(apt => apt.id === appointmentId);
+    const patient = mockPatients.find(p => p.id === appointment?.patientId);
+    
+    toast({
+      title: "Appointment Cancelled",
+      description: `Appointment with ${patient?.name} has been cancelled. The patient will be notified.`,
+    });
   };
 
   const AppointmentCard = ({ appointment, showActions = true }: { appointment: any, showActions?: boolean }) => {
@@ -75,9 +95,12 @@ const DoctorAppointments = () => {
             <div className="flex flex-col items-end space-y-2">
               <Badge 
                 variant={appointment.status === 'scheduled' ? 'default' : 'secondary'}
-                className={appointment.status === 'scheduled' ? 'bg-green-100 text-green-800' : ''}
+                className={
+                  appointment.status === 'scheduled' ? 'bg-green-100 text-green-800' : 
+                  appointment.status === 'cancelled' ? 'bg-red-100 text-red-800' : ''
+                }
               >
-                {appointment.status}
+                {appointment.status === 'cancelled' ? 'Cancelled' : appointment.status}
               </Badge>
               
               {showActions && appointment.status === 'scheduled' && (
@@ -96,14 +119,23 @@ const DoctorAppointments = () => {
                       </Button>
                     </Link>
                   </div>
-                  <Button 
-                    size="sm" 
-                    variant="outline"
-                    onClick={() => handleStartConsultation(appointment.id)}
-                    className="w-full"
-                  >
-                    Start Visit
-                  </Button>
+                  <div className="flex space-x-2">
+                    <Button 
+                      size="sm" 
+                      variant="outline"
+                      onClick={() => handleStartConsultation(appointment.id)}
+                      className="flex-1"
+                    >
+                      Start Visit
+                    </Button>
+                    <Button 
+                      size="sm" 
+                      variant="destructive"
+                      onClick={() => handleCancelAppointment(appointment.id)}
+                    >
+                      <XCircle className="w-3 h-3" />
+                    </Button>
+                  </div>
                 </div>
               )}
             </div>

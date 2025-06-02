@@ -1,210 +1,134 @@
 
 import React from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { useAuth } from '@/context/AuthContext';
-import { mockAppointments, mockPrescriptions, mockTestResults, mockDoctors } from '@/data/mockData';
-import { Calendar, Clock, User, FileText, TestTube, Heart, Activity } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Calendar, TestTube, Pill, Heart, ArrowRight } from 'lucide-react';
 import HealthMetricsCarousel from '@/components/patient/HealthMetricsCarousel';
 import DailyMedications from '@/components/patient/DailyMedications';
 
 const PatientOverview = () => {
-  const { user } = useAuth();
+  const upcomingAppointments = [
+    {
+      id: '1',
+      doctor: 'Dr. Sarah Johnson',
+      specialization: 'Cardiology',
+      date: '2024-06-05',
+      time: '10:00 AM',
+      hospital: 'City General Hospital'
+    },
+    {
+      id: '2',
+      doctor: 'Dr. Michael Chen',
+      specialization: 'Dermatology',
+      date: '2024-06-10',
+      time: '2:30 PM',
+      hospital: 'Metro Health Center'
+    }
+  ];
 
-  // Get upcoming appointments
-  const upcomingAppointments = mockAppointments
-    .filter(apt => apt.patientId === user?.id && apt.status === 'scheduled')
-    .slice(0, 2);
-
-  // Get recent prescriptions
-  const recentPrescriptions = mockPrescriptions
-    .filter(presc => presc.patientId === user?.id)
-    .slice(0, 2);
-
-  // Get recent test results
-  const recentTests = mockTestResults
-    .filter(test => test.patientId === user?.id)
-    .slice(0, 2);
-
-  const healthStats = {
-    nextAppointment: upcomingAppointments[0],
-    activeMedications: recentPrescriptions.reduce((acc, presc) => acc + presc.medications.length, 0),
-    pendingTests: mockTestResults.filter(test => test.status === 'pending').length,
-    lastVisit: '2024-05-28'
-  };
+  const recentTests = [
+    {
+      id: '1',
+      name: 'Complete Blood Count (CBC)',
+      date: '2024-05-30',
+      status: 'completed'
+    },
+    {
+      id: '2',
+      name: 'Lipid Panel',
+      date: '2024-05-30',
+      status: 'completed'
+    }
+  ];
 
   return (
     <div className="space-y-6">
-      {/* Welcome Header */}
-      <div className="bg-gradient-to-r from-medical-600 to-medical-700 rounded-lg p-6 text-white">
-        <h1 className="text-3xl font-bold mb-2">Welcome back, {user?.name}!</h1>
-        <p className="text-medical-100">Here's your health overview for today</p>
+      <div>
+        <h1 className="text-3xl font-bold text-gray-900 mb-2">Welcome back!</h1>
+        <p className="text-gray-600">Here's your health overview for today</p>
       </div>
 
-      {/* Quick Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        <Card>
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-600">Next Appointment</p>
-                <p className="text-2xl font-bold text-gray-900">
-                  {healthStats.nextAppointment ? 'Jun 5' : 'None'}
-                </p>
-              </div>
-              <Calendar className="h-8 w-8 text-medical-600" />
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-600">Active Medications</p>
-                <p className="text-2xl font-bold text-gray-900">{healthStats.activeMedications}</p>
-              </div>
-              <TestTube className="h-8 w-8 text-medical-600" />
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-600">Pending Tests</p>
-                <p className="text-2xl font-bold text-gray-900">{healthStats.pendingTests}</p>
-              </div>
-              <FileText className="h-8 w-8 text-medical-600" />
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-600">Health Score</p>
-                <p className="text-2xl font-bold text-green-600">Good</p>
-              </div>
-              <Heart className="h-8 w-8 text-red-500" />
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Daily Medications */}
-      <DailyMedications />
-
-      {/* Health Metrics Carousel */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center">
-            <Activity className="w-5 h-5 mr-2 text-medical-600" />
-            Health Progress Tracker
-          </CardTitle>
-          <CardDescription>Monitor your health trends and vital signs</CardDescription>
-        </CardHeader>
-        <CardContent>
+      {/* Compact Top Section - Side by Side Layout */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* Health Metrics Carousel */}
+        <div>
           <HealthMetricsCarousel />
-        </CardContent>
-      </Card>
+        </div>
+        
+        {/* Daily Medications */}
+        <div>
+          <DailyMedications />
+        </div>
+      </div>
 
+      {/* Bottom Section - Full Width Cards */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Upcoming Appointments */}
         <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-lg font-semibold">Upcoming Appointments</CardTitle>
-            <Link to="/patient/appointments">
-              <Button variant="outline" size="sm">View All</Button>
-            </Link>
+          <CardHeader className="flex flex-row items-center justify-between">
+            <CardTitle className="flex items-center">
+              <Calendar className="w-5 h-5 mr-2 text-medical-600" />
+              Upcoming Appointments
+            </CardTitle>
+            <Button variant="ghost" size="sm" asChild>
+              <a href="/patient/appointments">
+                View All <ArrowRight className="w-4 h-4 ml-1" />
+              </a>
+            </Button>
           </CardHeader>
-          <CardContent className="space-y-4">
-            {upcomingAppointments.length > 0 ? (
-              upcomingAppointments.map((appointment) => {
-                const doctor = mockDoctors.find(d => d.id === appointment.doctorId);
-                return (
-                  <div key={appointment.id} className="flex items-center space-x-4 p-3 rounded-lg border">
-                    <div className="flex-shrink-0">
-                      <div className="w-10 h-10 bg-medical-100 rounded-full flex items-center justify-center">
-                        <User className="w-5 h-5 text-medical-600" />
+          <CardContent>
+            <div className="space-y-4">
+              {upcomingAppointments.slice(0, 2).map((appointment) => (
+                <div key={appointment.id} className="border rounded-lg p-4 bg-blue-50">
+                  <div className="flex items-start justify-between">
+                    <div>
+                      <h4 className="font-medium text-gray-900">{appointment.doctor}</h4>
+                      <p className="text-sm text-gray-600">{appointment.specialization}</p>
+                      <div className="flex items-center space-x-4 mt-2 text-sm text-gray-500">
+                        <span>{appointment.date}</span>
+                        <span>{appointment.time}</span>
                       </div>
+                      <p className="text-xs text-gray-500 mt-1">{appointment.hospital}</p>
                     </div>
-                    <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium text-gray-900">{doctor?.name}</p>
-                      <p className="text-sm text-gray-500">{doctor?.specialization}</p>
-                      <div className="flex items-center space-x-4 text-xs text-gray-500 mt-1">
-                        <span className="flex items-center">
-                          <Calendar className="w-3 h-3 mr-1" />
-                          {appointment.date}
-                        </span>
-                        <span className="flex items-center">
-                          <Clock className="w-3 h-3 mr-1" />
-                          {appointment.time}
-                        </span>
-                      </div>
-                    </div>
-                    <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200">
-                      {appointment.status}
-                    </Badge>
+                    <Badge className="bg-green-100 text-green-800">Confirmed</Badge>
                   </div>
-                );
-              })
-            ) : (
-              <div className="text-center py-8 text-gray-500">
-                <Calendar className="w-12 h-12 mx-auto mb-4 text-gray-300" />
-                <p>No upcoming appointments</p>
-                <Link to="/patient/doctors">
-                  <Button className="mt-2" size="sm">Find a Doctor</Button>
-                </Link>
-              </div>
-            )}
+                </div>
+              ))}
+            </div>
           </CardContent>
         </Card>
 
-        {/* Recent Prescriptions */}
+        {/* Recent Test Results */}
         <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-lg font-semibold">Recent Prescriptions</CardTitle>
-            <Link to="/patient/prescriptions">
-              <Button variant="outline" size="sm">View All</Button>
-            </Link>
+          <CardHeader className="flex flex-row items-center justify-between">
+            <CardTitle className="flex items-center">
+              <TestTube className="w-5 h-5 mr-2 text-medical-600" />
+              Recent Test Results
+            </CardTitle>
+            <Button variant="ghost" size="sm" asChild>
+              <a href="/patient/tests">
+                View All <ArrowRight className="w-4 h-4 ml-1" />
+              </a>
+            </Button>
           </CardHeader>
-          <CardContent className="space-y-4">
-            {recentPrescriptions.length > 0 ? (
-              recentPrescriptions.map((prescription) => {
-                const doctor = mockDoctors.find(d => d.id === prescription.doctorId);
-                return (
-                  <div key={prescription.id} className="p-3 rounded-lg border">
-                    <div className="flex items-center justify-between mb-2">
-                      <p className="text-sm font-medium text-gray-900">{doctor?.name}</p>
-                      <span className="text-xs text-gray-500">{prescription.date}</span>
+          <CardContent>
+            <div className="space-y-4">
+              {recentTests.map((test) => (
+                <div key={test.id} className="border rounded-lg p-4 bg-green-50">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <h4 className="font-medium text-gray-900">{test.name}</h4>
+                      <p className="text-sm text-gray-600">Date: {test.date}</p>
                     </div>
-                    <p className="text-sm text-gray-600 mb-2">{prescription.diagnosis}</p>
-                    <div className="flex flex-wrap gap-1">
-                      {prescription.medications.slice(0, 2).map((med, index) => (
-                        <Badge key={index} variant="secondary" className="text-xs">
-                          {med.name}
-                        </Badge>
-                      ))}
-                      {prescription.medications.length > 2 && (
-                        <Badge variant="secondary" className="text-xs">
-                          +{prescription.medications.length - 2} more
-                        </Badge>
-                      )}
+                    <div className="flex items-center space-x-2">
+                      <Badge className="bg-green-100 text-green-800">✅ Available</Badge>
+                      <Button size="sm" variant="outline">View</Button>
                     </div>
                   </div>
-                );
-              })
-            ) : (
-              <div className="text-center py-8 text-gray-500">
-                <FileText className="w-12 h-12 mx-auto mb-4 text-gray-300" />
-                <p>No recent prescriptions</p>
-              </div>
-            )}
+                </div>
+              ))}
+            </div>
           </CardContent>
         </Card>
       </div>
@@ -212,35 +136,37 @@ const PatientOverview = () => {
       {/* Quick Actions */}
       <Card>
         <CardHeader>
-          <CardTitle className="text-lg font-semibold">Quick Actions</CardTitle>
-          <CardDescription>Common tasks you might want to do</CardDescription>
+          <CardTitle className="flex items-center">
+            <Heart className="w-5 h-5 mr-2 text-medical-600" />
+            Quick Actions
+          </CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-            <Link to="/patient/symptoms">
-              <Button variant="outline" className="w-full h-auto flex-col py-4">
-                <Heart className="w-6 h-6 mb-2 text-medical-600" />
-                <span>Track Symptoms</span>
-              </Button>
-            </Link>
-            <Link to="/patient/doctors">
-              <Button variant="outline" className="w-full h-auto flex-col py-4">
-                <User className="w-6 h-6 mb-2 text-medical-600" />
-                <span>Find Doctor</span>
-              </Button>
-            </Link>
-            <Link to="/patient/appointments">
-              <Button variant="outline" className="w-full h-auto flex-col py-4">
-                <Calendar className="w-6 h-6 mb-2 text-medical-600" />
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <Button asChild className="h-20 flex-col bg-medical-600 hover:bg-medical-700">
+              <a href="/patient/doctors">
+                <Calendar className="w-6 h-6 mb-2" />
                 <span>Book Appointment</span>
-              </Button>
-            </Link>
-            <Link to="/patient/tests">
-              <Button variant="outline" className="w-full h-auto flex-col py-4">
-                <TestTube className="w-6 h-6 mb-2 text-medical-600" />
-                <span>View Test Results</span>
-              </Button>
-            </Link>
+              </a>
+            </Button>
+            <Button asChild variant="outline" className="h-20 flex-col">
+              <a href="/patient/tests/request">
+                <TestTube className="w-6 h-6 mb-2" />
+                <span>Request Test</span>
+              </a>
+            </Button>
+            <Button asChild variant="outline" className="h-20 flex-col">
+              <a href="/patient/symptoms">
+                <Heart className="w-6 h-6 mb-2" />
+                <span>Track Symptoms</span>
+              </a>
+            </Button>
+            <Button asChild variant="outline" className="h-20 flex-col">
+              <a href="/patient/prescriptions">
+                <Pill className="w-6 h-6 mb-2" />
+                <span>View Prescriptions</span>
+              </a>
+            </Button>
           </div>
         </CardContent>
       </Card>
