@@ -3,7 +3,7 @@ import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Calendar, TestTube, Pill, Heart, ArrowRight } from 'lucide-react';
+import { Calendar, TestTube, Pill, Heart, ArrowRight, Syringe } from 'lucide-react';
 import HealthMetricsCarousel from '@/components/patient/HealthMetricsCarousel';
 import DailyMedications from '@/components/patient/DailyMedications';
 
@@ -13,7 +13,7 @@ const PatientOverview = () => {
       id: '1',
       doctor: 'Dr. Sarah Johnson',
       specialization: 'Cardiology',
-      date: '2024-06-05',
+      date: '2025-06-05',
       time: '10:00 AM',
       hospital: 'City General Hospital'
     },
@@ -21,9 +21,17 @@ const PatientOverview = () => {
       id: '2',
       doctor: 'Dr. Michael Chen',
       specialization: 'Dermatology',
-      date: '2024-06-10',
+      date: '2025-06-10',
       time: '2:30 PM',
       hospital: 'Metro Health Center'
+    },
+    {
+      id: '3',
+      doctor: 'Dr. Emily Rodriguez',
+      specialization: 'Pediatrics',
+      date: '2025-06-15',
+      time: '9:00 AM',
+      hospital: 'Children\'s Medical Center'
     }
   ];
 
@@ -42,14 +50,74 @@ const PatientOverview = () => {
     }
   ];
 
+  // Stats for the top cards
+  const nextAppointment = upcomingAppointments[0];
+  const activeMedications = 2; // From DailyMedications component
+  const pendingTests = 0;
+  const healthScore = "Good";
+
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">Welcome back!</h1>
-        <p className="text-gray-600">Here's your health overview for today</p>
+      {/* Welcome Banner */}
+      <div className="bg-gradient-to-r from-teal-500 to-teal-600 text-white p-6 rounded-lg">
+        <h1 className="text-3xl font-bold mb-2">Welcome back, John Smith!</h1>
+        <p className="text-teal-100">Here's your health overview for today</p>
       </div>
 
-      {/* Compact Top Section - Side by Side Layout */}
+      {/* Stats Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <Card className="p-4">
+          <div className="flex items-center space-x-3">
+            <div className="p-2 bg-blue-100 rounded-lg">
+              <Calendar className="w-6 h-6 text-blue-600" />
+            </div>
+            <div>
+              <p className="text-sm text-gray-600">Next Appointment</p>
+              <p className="text-xl font-bold text-gray-900">
+                {nextAppointment ? `Jun ${new Date(nextAppointment.date).getDate()}` : 'None'}
+              </p>
+            </div>
+          </div>
+        </Card>
+
+        <Card className="p-4">
+          <div className="flex items-center space-x-3">
+            <div className="p-2 bg-blue-100 rounded-lg">
+              <Syringe className="w-6 h-6 text-blue-600" />
+            </div>
+            <div>
+              <p className="text-sm text-gray-600">Active Medications</p>
+              <p className="text-xl font-bold text-gray-900">{activeMedications}</p>
+            </div>
+          </div>
+        </Card>
+
+        <Card className="p-4">
+          <div className="flex items-center space-x-3">
+            <div className="p-2 bg-blue-100 rounded-lg">
+              <TestTube className="w-6 h-6 text-blue-600" />
+            </div>
+            <div>
+              <p className="text-sm text-gray-600">Pending Tests</p>
+              <p className="text-xl font-bold text-gray-900">{pendingTests}</p>
+            </div>
+          </div>
+        </Card>
+
+        <Card className="p-4">
+          <div className="flex items-center space-x-3">
+            <div className="p-2 bg-red-100 rounded-lg">
+              <Heart className="w-6 h-6 text-red-600" />
+            </div>
+            <div>
+              <p className="text-sm text-gray-600">Health Score</p>
+              <p className="text-xl font-bold text-green-600">{healthScore}</p>
+            </div>
+          </div>
+        </Card>
+      </div>
+
+      {/* Side by Side Layout - Health Metrics and Medications */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Health Metrics Carousel */}
         <div>

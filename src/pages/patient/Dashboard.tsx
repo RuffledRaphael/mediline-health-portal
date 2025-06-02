@@ -35,6 +35,7 @@ const PatientDashboard = () => {
     { path: '/patient/appointments', icon: Calendar, label: 'Appointments' },
     { path: '/patient/prescriptions', icon: Pill, label: 'Prescriptions' },
     { path: '/patient/tests', icon: TestTube, label: 'Tests & Results' },
+    { path: '/patient/tests/request', icon: TestTube, label: 'Request Test' },
     { path: '/patient/profile', icon: User, label: 'Profile' },
   ];
 
