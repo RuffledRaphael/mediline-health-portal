@@ -62,9 +62,37 @@ const Index = () => {
         <div className="container mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-3">
-              <div className="w-10 h-10 bg-medical-600 rounded-xl flex items-center justify-center">
-                <Heart className="w-6 h-6 text-white" />
+              <div className="h-10 w-10 bg-medical-600 rounded-md flex items-center justify-center">
+                <svg
+                  className="h-6 w-6"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M12 2L4 6V18L12 22L20 18V6L12 2Z"
+                    stroke="white"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                  <path
+                    d="M12 8V16"
+                    stroke="white"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                  <path
+                    d="M8 12H16"
+                    stroke="white"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                </svg>
               </div>
+
               <span className="text-2xl font-bold text-gray-900">MediLine Health</span>
             </div>
             <div className="flex items-center space-x-4">

@@ -3,7 +3,7 @@ import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Calendar, TestTube, Pill, Heart, ArrowRight, Syringe } from 'lucide-react';
+import { Calendar, TestTube, Pill, Heart, ArrowRight, Syringe, FileText } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import HealthMetricsCarousel from '@/components/patient/HealthMetricsCarousel';
 import DailyMedications from '@/components/patient/DailyMedications';
@@ -76,7 +76,7 @@ const PatientOverview = () => {
   return (
     <div className="space-y-6">
       {/* Welcome Banner */}
-      <div className="bg-gradient-to-r from-teal-500 to-teal-600 text-white p-6 rounded-lg">
+      <div className="bg-gradient-to-r from-medical-600 to-medical-700 text-white p-6 rounded-lg">
         <h1 className="text-3xl font-bold mb-2">Welcome back, John Smith!</h1>
         <p className="text-teal-100">Here's your health overview for today</p>
       </div>

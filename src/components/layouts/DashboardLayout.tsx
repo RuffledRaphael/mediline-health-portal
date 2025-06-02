@@ -2,6 +2,8 @@
 import React from 'react';
 import { useAuth } from '@/context/AuthContext';
 import { Button } from '@/components/ui/button';
+import { Link } from "react-router-dom";
+
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import {
   DropdownMenu,
@@ -43,14 +45,42 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children, sidebar }) 
       <header className="bg-white border-b border-gray-200 sticky top-0 z-50">
         <div className="px-6 py-4 flex justify-between items-center">
           <div className="flex items-center space-x-4">
-            <div className="flex items-center space-x-3">
-              <img 
-                src="/lovable-uploads/139eaa8f-19d8-4536-8ed8-0a0361b34ea4.png" 
-                alt="MediLine Health Logo" 
-                className="h-10 w-auto"
-              />
-              <span className="text-xl font-bold text-gray-900">MediLine Health</span>
+            <Link to="/" className="flex-shrink-0 flex items-center">
+            <div className="h-10 w-10 bg-medical-600 rounded-md flex items-center justify-center">
+              <svg
+                className="h-6 w-6"
+                viewBox="0 0 24 24"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M12 2L4 6V18L12 22L20 18V6L12 2Z"
+                  stroke="white"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+                <path
+                  d="M12 8V16"
+                  stroke="white"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+                <path
+                  d="M8 12H16"
+                  stroke="white"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </svg>
             </div>
+
+              <span className="ml-2 text-xl font-semibold text-medical-primary">
+                MediLine Health
+              </span>
+              </Link>
           </div>
           
           <div className="flex items-center space-x-4">
