@@ -1,5 +1,5 @@
 
-import LoginForm from "@/components/common/LoginForm";
+import GeneralLoginForm from "@/components/common/GeneralLoginForm";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Link } from "react-router-dom";
@@ -126,7 +126,7 @@ const Index = () => {
           <div className="flex justify-center lg:justify-end">
             <Card className="w-full max-w-md shadow-xl">
               <CardContent className="p-0">
-                <LoginForm />
+                <GeneralLoginForm />
               </CardContent>
             </Card>
           </div>
