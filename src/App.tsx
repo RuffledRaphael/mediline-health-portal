@@ -10,6 +10,11 @@ import NotFound from "./pages/NotFound";
 import PatientDashboard from "./pages/patient/Dashboard";
 import DoctorDashboard from "./pages/doctor/Dashboard";
 import HospitalDashboard from "./pages/hospital/Dashboard";
+import PatientRegister from "./pages/auth/PatientRegister";
+import DoctorRegister from "./pages/auth/DoctorRegister";
+import HospitalRegister from "./pages/auth/HospitalRegister";
+import AdminLogin from "./pages/admin/AdminLogin";
+import AdminDashboard from "./pages/admin/AdminDashboard";
 
 const queryClient = new QueryClient();
 
@@ -31,6 +36,17 @@ const AppRoutes = () => {
   return (
     <Routes>
       <Route path="/" element={<Index />} />
+      
+      {/* Registration Routes */}
+      <Route path="/register/patient" element={<PatientRegister />} />
+      <Route path="/register/doctor" element={<DoctorRegister />} />
+      <Route path="/register/hospital" element={<HospitalRegister />} />
+      
+      {/* Admin Routes */}
+      <Route path="/admin" element={<AdminLogin />} />
+      <Route path="/admin/dashboard" element={<AdminDashboard />} />
+      
+      {/* Protected User Routes */}
       <Route 
         path="/patient/*" 
         element={
