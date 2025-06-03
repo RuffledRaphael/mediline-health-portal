@@ -12,8 +12,38 @@ const Index = () => {
       <header className="container mx-auto px-4 py-6">
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-3">
-            <div className="h-12 w-12 bg-gradient-to-br from-medical-600 to-medical-700 rounded-xl flex items-center justify-center shadow-lg">
+            {/* <div className="h-12 w-12 bg-gradient-to-br from-medical-600 to-medical-700 rounded-xl flex items-center justify-center shadow-lg">
               <Heart className="h-7 w-7 text-white" />
+            </div> */}
+            <div className="h-12 w-12 bg-gradient-to-br from-medical-600 to-medical-700 rounded-xl flex items-center justify-center shadow-lg">
+              <svg
+                className="h-7 w-7"
+                viewBox="0 0 24 24"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M12 2L4 6V18L12 22L20 18V6L12 2Z"
+                  stroke="white"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+                <path
+                  d="M12 8V16"
+                  stroke="white"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+                <path
+                  d="M8 12H16"
+                  stroke="white"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </svg>
             </div>
             <div>
               <h1 className="text-2xl font-bold text-medical-primary">MediLine Health</h1>
@@ -57,7 +87,7 @@ const Index = () => {
                       <Heart className="w-6 h-6 text-blue-600" />
                     </div>
                     <h4 className="font-semibold text-gray-900 mb-2">Patient Portal</h4>
-                    <p className="text-xs text-gray-600 mb-3">Track health, book appointments, manage medical journey</p>
+                    <p className="text-xs text-gray-600 mb-3">Book appointments, manage medical journey</p>
                     <Button asChild size="sm" className="w-full bg-blue-600 hover:bg-blue-700">
                       <Link to="/register/patient">Register as Patient</Link>
                     </Button>
