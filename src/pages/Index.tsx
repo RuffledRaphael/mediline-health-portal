@@ -24,7 +24,7 @@ const Index = () => {
           <div className="flex items-center space-x-4">
             <div className="hidden md:flex items-center space-x-2 text-sm text-gray-600">
               <UserPlus className="w-4 h-4" />
-              <span>New here?</span>
+              <Link to="/register/patient"><span>New here?</span></Link>
             </div>
           </div>
         </div>
@@ -48,7 +48,7 @@ const Index = () => {
 
             {/* Quick Access Portals */}
             <div className="space-y-4">
-              <h3 className="text-lg font-semibold text-gray-900">Choose Your Access Portal</h3>
+              <h3 className="text-lg font-semibold text-gray-900">Choose Your healthcare role</h3>
               <p className="text-sm text-gray-600">Different interfaces designed for different healthcare roles</p>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <Card className="hover:shadow-lg transition-all duration-300 hover:scale-105 border-l-4 border-l-blue-500">
@@ -59,7 +59,7 @@ const Index = () => {
                     <h4 className="font-semibold text-gray-900 mb-2">Patient Portal</h4>
                     <p className="text-xs text-gray-600 mb-3">Track health, book appointments, manage medical journey</p>
                     <Button asChild size="sm" className="w-full bg-blue-600 hover:bg-blue-700">
-                      <Link to="/register/patient">Access Portal</Link>
+                      <Link to="/register/patient">Register as Patient</Link>
                     </Button>
                   </CardContent>
                 </Card>
@@ -72,7 +72,7 @@ const Index = () => {
                     <h4 className="font-semibold text-gray-900 mb-2">Doctor Portal</h4>
                     <p className="text-xs text-gray-600 mb-3">Manage patients, appointments, medical records</p>
                     <Button asChild size="sm" className="w-full bg-green-600 hover:bg-green-700">
-                      <Link to="/register/doctor">Access Portal</Link>
+                      <Link to="/register/doctor">Register as Doctor</Link>
                     </Button>
                   </CardContent>
                 </Card>
@@ -83,9 +83,9 @@ const Index = () => {
                       <Building2 className="w-6 h-6 text-purple-600" />
                     </div>
                     <h4 className="font-semibold text-gray-900 mb-2">Hospital Portal</h4>
-                    <p className="text-xs text-gray-600 mb-3">Upload test results, coordinate healthcare</p>
+                    <p className="text-xs text-gray-600 mb-3">Upload test results, manage test bookings, coordinate healthcare</p>
                     <Button asChild size="sm" className="w-full bg-purple-600 hover:bg-purple-700">
-                      <Link to="/register/hospital">Access Portal</Link>
+                      <Link to="/register/hospital">Register as Hospital</Link>
                     </Button>
                   </CardContent>
                 </Card>
