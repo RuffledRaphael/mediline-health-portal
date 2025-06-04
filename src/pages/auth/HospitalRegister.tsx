@@ -1,77 +1,103 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { Checkbox } from '@/components/ui/checkbox';
 import { Link, useNavigate } from 'react-router-dom';
-import { Building2, ArrowLeft, Upload } from 'lucide-react';
+import { Building2, ArrowLeft } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import api from '@/lib/api';
 
 const HospitalRegister = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const [formData, setFormData] = useState({
-    hospitalName: '',
+    name: '',
     email: '',
     password: '',
     confirmPassword: '',
-    licenseNumber: '',
+    phoneNumber: '',
     address: '',
-    contactNumber: '',
-    testTypes: [] as string[]
+    description: ''
   });
 
-  const availableTestTypes = [
-    'Blood Tests', 'Urine Analysis', 'X-Ray', 'CT Scan', 'MRI', 'Ultrasound',
-    'ECG', 'Echo', 'Endoscopy', 'Biopsy', 'Pathology', 'Microbiology',
-    'Biochemistry', 'Hematology', 'Immunology', 'Molecular Diagnostics'
-  ];
-
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
+    // Client-side validation
+    if (!formData.name || !formData.email || !formData.password || !formData.confirmPassword ||
+        !formData.phoneNumber || !formData.address || !formData.description) {
+      toast({
+        title: "Error",
+        description: "Please fill in all required fields.",
+        variant: "destructive"
+      });
+      return;
+    }
+
     if (formData.password !== formData.confirmPassword) {
       toast({
         title: "Error",
-        description: "Passwords do not match",
+        description: "Passwords do not match.",
         variant: "destructive"
       });
       return;
     }
 
-    if (formData.testTypes.length === 0) {
+    // Validate email format
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(formData.email)) {
       toast({
         title: "Error",
-        description: "Please select at least one test type",
+        description: "Please enter a valid email address.",
         variant: "destructive"
       });
       return;
     }
 
-    toast({
-      title: "Registration Submitted!",
-      description: "Your registration is pending admin approval. You will be notified once approved.",
-    });
+    // Validate phone number format (10-15 digits)
+    const phoneRegex = /^\d{10,15}$/;
+    if (!phoneRegex.test(formData.phoneNumber)) {
+      toast({
+        title: "Error",
+        description: "Please enter a valid phone number (10-15 digits).",
+        variant: "destructive"
+      });
+      return;
+    }
 
-    setTimeout(() => {
-      navigate('/');
-    }, 3000);
+    try {
+      // Send POST request to backend
+      await api.post('/register/medical-center', {
+        email: formData.email,
+        password: formData.password,
+        name: formData.name,
+        description: formData.description,
+        phoneNumber: formData.phoneNumber,
+        address: formData.address
+      });
+
+      toast({
+        title: "Registration Submitted!",
+        description: "Your medical center registration is pending admin approval. You will be notified once approved.",
+      });
+
+      // Redirect to login after 3 seconds
+      setTimeout(() => {
+        navigate('/');
+      }, 3000);
+    } catch (error) {
+      toast({
+        title: "Registration Failed",
+        description: error.message || "An error occurred during registration.",
+        variant: "destructive"
+      });
+    }
   };
 
-  const handleInputChange = (field: string, value: string) => {
+  const handleInputChange = (field: keyof typeof formData, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }));
-  };
-
-  const handleTestTypeChange = (testType: string, checked: boolean) => {
-    setFormData(prev => ({
-      ...prev,
-      testTypes: checked 
-        ? [...prev.testTypes, testType]
-        : prev.testTypes.filter(t => t !== testType)
-    }));
   };
 
   return (
@@ -91,19 +117,19 @@ const HospitalRegister = () => {
                 <Building2 className="h-6 w-6 text-white" />
               </div>
             </div>
-            <CardTitle className="text-2xl font-bold text-medical-700">Hospital Registration</CardTitle>
+            <CardTitle className="text-2xl font-bold text-medical-700">Medical Center Registration</CardTitle>
             <p className="text-gray-600">Partner with us to provide quality healthcare services</p>
           </CardHeader>
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-6">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <Label htmlFor="hospitalName">Hospital/Clinic Name *</Label>
+                  <Label htmlFor="name">Medical Center Name *</Label>
                   <Input
-                    id="hospitalName"
+                    id="name"
                     type="text"
-                    value={formData.hospitalName}
-                    onChange={(e) => handleInputChange('hospitalName', e.target.value)}
+                    value={formData.name}
+                    onChange={(e) => handleInputChange('name', e.target.value)}
                     required
                   />
                 </div>
@@ -144,22 +170,23 @@ const HospitalRegister = () => {
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <Label htmlFor="licenseNumber">Hospital License Number *</Label>
+                  <Label htmlFor="phoneNumber">Contact Number *</Label>
                   <Input
-                    id="licenseNumber"
-                    type="text"
-                    value={formData.licenseNumber}
-                    onChange={(e) => handleInputChange('licenseNumber', e.target.value)}
+                    id="phoneNumber"
+                    type="tel"
+                    value={formData.phoneNumber}
+                    onChange={(e) => handleInputChange('phoneNumber', e.target.value)}
+                    placeholder="1234567890"
                     required
                   />
                 </div>
                 <div>
-                  <Label htmlFor="contactNumber">Contact Number *</Label>
-                  <Input
-                    id="contactNumber"
-                    type="tel"
-                    value={formData.contactNumber}
-                    onChange={(e) => handleInputChange('contactNumber', e.target.value)}
+                  <Label htmlFor="description">Description *</Label>
+                  <Textarea
+                    id="description"
+                    value={formData.description}
+                    onChange={(e) => handleInputChange('description', e.target.value)}
+                    placeholder="Describe your medical center"
                     required
                   />
                 </div>
@@ -171,47 +198,15 @@ const HospitalRegister = () => {
                   id="address"
                   value={formData.address}
                   onChange={(e) => handleInputChange('address', e.target.value)}
-                  placeholder="Enter complete hospital/clinic address"
+                  placeholder="Enter complete medical center address"
                   required
                 />
               </div>
 
-              <div>
-                <Label>Available Test Types *</Label>
-                <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mt-2 max-h-48 overflow-y-auto border rounded-lg p-4">
-                  {availableTestTypes.map(testType => (
-                    <div key={testType} className="flex items-center space-x-2">
-                      <Checkbox
-                        id={testType}
-                        checked={formData.testTypes.includes(testType)}
-                        onCheckedChange={(checked) => handleTestTypeChange(testType, checked as boolean)}
-                      />
-                      <Label htmlFor={testType} className="text-sm">{testType}</Label>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              <div>
-                <Label htmlFor="logo">Hospital Logo (Optional)</Label>
-                <div className="mt-2 border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
-                  <Upload className="w-8 h-8 mx-auto text-gray-400 mb-2" />
-                  <p className="text-sm text-gray-600">Click to upload or drag and drop</p>
-                  <p className="text-xs text-gray-500">PNG, JPG up to 5MB</p>
-                  <Input type="file" className="hidden" id="logo" accept="image/*" />
-                </div>
-              </div>
-
               <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
-                <h4 className="font-medium text-yellow-800 mb-2">Required Documents for Verification</h4>
-                <ul className="text-sm text-yellow-700 space-y-1">
-                  <li>• Valid Hospital/Clinic License</li>
-                  <li>• Medical Council Registration</li>
-                  <li>• Tax Registration Certificate</li>
-                  <li>• Insurance Documentation</li>
-                </ul>
-                <p className="text-xs text-yellow-600 mt-2">
-                  Please have these documents ready for the verification process.
+                <h4 className="font-medium text-yellow-800 mb-2">Registration Information</h4>
+                <p className="text-sm text-yellow-700">
+                  Your registration will be reviewed by our admin team within 2-3 business days.
                 </p>
               </div>
 
@@ -220,10 +215,8 @@ const HospitalRegister = () => {
               </Button>
 
               <div className="text-center text-sm text-gray-600 space-y-2">
-                <p>Your registration will be reviewed by our admin team within 2-3 business days.</p>
-                <p>
-                  Already have an account?{' '}
-                  <Link to="/" className="text-medical-600 hover:text-medical-700 font-medium">
+                <p>Already have an account?{' '}
+                  <Link to="/login" className="text-medical-600 hover:text-medical-700 font-medium">
                     Sign in here
                   </Link>
                 </p>

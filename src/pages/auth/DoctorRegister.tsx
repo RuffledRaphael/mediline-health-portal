@@ -1,84 +1,129 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
+import { Label } from '@radix-ui/react-label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
-import { Checkbox } from '@/components/ui/checkbox';
 import { Link, useNavigate } from 'react-router-dom';
-import { Stethoscope, ArrowLeft, Upload } from 'lucide-react';
+import { Stethoscope, ArrowLeft } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import api from '@/lib/api';
 
 const DoctorRegister = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const [formData, setFormData] = useState({
-    fullName: '',
     email: '',
     password: '',
     confirmPassword: '',
-    degree: '',
+    firstName: '',
+    lastName: '',
+    gender: '',
     specialization: '',
-    licenseNumber: '',
-    chambers: '',
-    availability: [] as string[],
-    contactNumber: '',
-    bio: ''
+    designation: '',
+    academicInstitution: '',
+    phoneNumber: '',
+    address: '',
   });
-
-  const availabilityOptions = [
-    'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'
-  ];
 
   const specializations = [
     'Cardiology', 'Dermatology', 'Pediatrics', 'Neurology', 'Orthopedics',
     'Gynecology', 'Psychiatry', 'Oncology', 'Gastroenterology', 'Endocrinology'
   ];
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
+    // Basic client-side validation
+    if (
+      !formData.email ||
+      !formData.password ||
+      !formData.confirmPassword ||
+      !formData.firstName ||
+      !formData.lastName ||
+      !formData.gender ||
+      !formData.specialization ||
+      !formData.designation ||
+      !formData.academicInstitution ||
+      !formData.phoneNumber ||
+      !formData.address
+    ) {
+      toast({
+        title: 'Error',
+        description: 'Please fill in all required fields.',
+        variant: 'destructive',
+      });
+      return;
+    }
+
+    // Validate password and confirmPassword match
     if (formData.password !== formData.confirmPassword) {
       toast({
-        title: "Error",
-        description: "Passwords do not match",
-        variant: "destructive"
+        title: 'Error',
+        description: 'Passwords do not match.',
+        variant: 'destructive',
       });
       return;
     }
 
-    if (formData.availability.length === 0) {
+    // Validate email format
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(formData.email)) {
       toast({
-        title: "Error",
-        description: "Please select at least one day of availability",
-        variant: "destructive"
+        title: 'Error',
+        description: 'Please enter a valid email address.',
+        variant: 'destructive',
       });
       return;
     }
 
-    toast({
-      title: "Registration Submitted!",
-      description: "Your registration is pending admin approval. You will be notified once approved.",
-    });
+    // Validate phone number format (10-15 digits)
+    const phoneRegex = /^\d{10,15}$/;
+    if (!phoneRegex.test(formData.phoneNumber)) {
+      toast({
+        title: 'Error',
+        description: 'Please enter a valid phone number (10-15 digits).',
+        variant: 'destructive',
+      });
+      return;
+    }
 
-    setTimeout(() => {
-      navigate('/');
-    }, 3000);
+    try {
+      // Send POST request to backend
+      await api.post('/register/doctor', {
+        email: formData.email,
+        password: formData.password,
+        firstName: formData.firstName,
+        lastName: formData.lastName,
+        gender: formData.gender.charAt(0).toUpperCase() + formData.gender.slice(1).toLowerCase(), // Capitalize first letter
+        specialization: formData.specialization,
+        designation: formData.designation,
+        academicInstitution: formData.academicInstitution,
+        phoneNumber: formData.phoneNumber,
+        address: formData.address,
+      });
+
+      toast({
+        title: 'Registration Successful!',
+        description: 'Your doctor account has been created. Redirecting to login.',
+      });
+
+      // Redirect to login after 2 seconds
+      setTimeout(() => {
+        navigate('/');
+      }, 2000);
+    } catch (error) {
+      toast({
+        title: 'Registration Failed',
+        description: error.message || 'An error occurred during registration.',
+        variant: 'destructive',
+      });
+    }
   };
 
-  const handleInputChange = (field: string, value: string) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
-  };
-
-  const handleAvailabilityChange = (day: string, checked: boolean) => {
-    setFormData(prev => ({
-      ...prev,
-      availability: checked 
-        ? [...prev.availability, day]
-        : prev.availability.filter(d => d !== day)
-    }));
+  const handleInputChange = (field: keyof typeof formData, value: string) => {
+    setFormData((prev) => ({ ...prev, [field]: value }));
   };
 
   return (
@@ -105,15 +150,28 @@ const DoctorRegister = () => {
             <form onSubmit={handleSubmit} className="space-y-6">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <Label htmlFor="fullName">Full Name *</Label>
+                  <Label htmlFor="firstName">First Name *</Label>
                   <Input
-                    id="fullName"
+                    id="firstName"
                     type="text"
-                    value={formData.fullName}
-                    onChange={(e) => handleInputChange('fullName', e.target.value)}
+                    value={formData.firstName}
+                    onChange={(e) => handleInputChange('firstName', e.target.value)}
                     required
                   />
                 </div>
+                <div>
+                  <Label htmlFor="lastName">Last Name *</Label>
+                  <Input
+                    id="lastName"
+                    type="text"
+                    value={formData.lastName}
+                    onChange={(e) => handleInputChange('lastName', e.target.value)}
+                    required
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <Label htmlFor="email">Email *</Label>
                   <Input
@@ -121,6 +179,17 @@ const DoctorRegister = () => {
                     type="email"
                     value={formData.email}
                     onChange={(e) => handleInputChange('email', e.target.value)}
+                    required
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="phoneNumber">Phone Number *</Label>
+                  <Input
+                    id="phoneNumber"
+                    type="tel"
+                    value={formData.phoneNumber}
+                    onChange={(e) => handleInputChange('phoneNumber', e.target.value)}
+                    placeholder="1234567890"
                     required
                   />
                 </div>
@@ -151,19 +220,24 @@ const DoctorRegister = () => {
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <Label htmlFor="degree">Degree(s) *</Label>
-                  <Input
-                    id="degree"
-                    type="text"
-                    value={formData.degree}
-                    onChange={(e) => handleInputChange('degree', e.target.value)}
-                    placeholder="e.g., MD, MBBS, PhD"
-                    required
-                  />
+                  <Label htmlFor="gender">Gender *</Label>
+                  <Select value={formData.gender} onValueChange={(value) => handleInputChange('gender', value)}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select gender" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="Male">Male</SelectItem>
+                      <SelectItem value="Female">Female</SelectItem>
+                      <SelectItem value="Other">Other</SelectItem>
+                    </SelectContent>
+                  </Select>
                 </div>
                 <div>
                   <Label htmlFor="specialization">Specialization *</Label>
-                  <Select value={formData.specialization} onValueChange={(value) => handleInputChange('specialization', value)}>
+                  <Select
+                    value={formData.specialization}
+                    onValueChange={(value) => handleInputChange('specialization', value)}
+                  >
                     <SelectTrigger>
                       <SelectValue placeholder="Select specialization" />
                     </SelectTrigger>
@@ -178,84 +252,49 @@ const DoctorRegister = () => {
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <Label htmlFor="licenseNumber">License/Registration Number *</Label>
+                  <Label htmlFor="designation">Designation *</Label>
                   <Input
-                    id="licenseNumber"
+                    id="designation"
                     type="text"
-                    value={formData.licenseNumber}
-                    onChange={(e) => handleInputChange('licenseNumber', e.target.value)}
+                    value={formData.designation}
+                    onChange={(e) => handleInputChange('designation', e.target.value)}
+                    placeholder="e.g., Consultant, Professor"
                     required
                   />
                 </div>
                 <div>
-                  <Label htmlFor="contactNumber">Contact Number *</Label>
+                  <Label htmlFor="academicInstitution">Academic Institution *</Label>
                   <Input
-                    id="contactNumber"
-                    type="tel"
-                    value={formData.contactNumber}
-                    onChange={(e) => handleInputChange('contactNumber', e.target.value)}
+                    id="academicInstitution"
+                    type="text"
+                    value={formData.academicInstitution}
+                    onChange={(e) => handleInputChange('academicInstitution', e.target.value)}
+                    placeholder="e.g., Harvard Medical School"
                     required
                   />
                 </div>
               </div>
 
               <div>
-                <Label htmlFor="chambers">Available Chambers/Locations *</Label>
+                <Label htmlFor="address">Address *</Label>
                 <Textarea
-                  id="chambers"
-                  value={formData.chambers}
-                  onChange={(e) => handleInputChange('chambers', e.target.value)}
-                  placeholder="List your practice locations with addresses"
+                  id="address"
+                  value={formData.address}
+                  onChange={(e) => handleInputChange('address', e.target.value)}
+                  placeholder="Enter your full address"
                   required
                 />
               </div>
 
-              <div>
-                <Label>Days of Availability *</Label>
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-2">
-                  {availabilityOptions.map(day => (
-                    <div key={day} className="flex items-center space-x-2">
-                      <Checkbox
-                        id={day}
-                        checked={formData.availability.includes(day)}
-                        onCheckedChange={(checked) => handleAvailabilityChange(day, checked as boolean)}
-                      />
-                      <Label htmlFor={day} className="text-sm">{day}</Label>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              <div>
-                <Label htmlFor="profilePhoto">Profile Photo</Label>
-                <div className="mt-2 border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
-                  <Upload className="w-8 h-8 mx-auto text-gray-400 mb-2" />
-                  <p className="text-sm text-gray-600">Click to upload or drag and drop</p>
-                  <p className="text-xs text-gray-500">PNG, JPG up to 5MB</p>
-                  <Input type="file" className="hidden" id="profilePhoto" accept="image/*" />
-                </div>
-              </div>
-
-              <div>
-                <Label htmlFor="bio">Professional Bio</Label>
-                <Textarea
-                  id="bio"
-                  value={formData.bio}
-                  onChange={(e) => handleInputChange('bio', e.target.value)}
-                  placeholder="Brief description of your experience and expertise"
-                  rows={4}
-                />
-              </div>
-
               <Button type="submit" className="w-full bg-medical-600 hover:bg-medical-700">
-                Submit Registration
+                Register as Doctor
               </Button>
 
               <div className="text-center text-sm text-gray-600 space-y-2">
                 <p>Your registration will be reviewed by our admin team.</p>
                 <p>
                   Already have an account?{' '}
-                  <Link to="/" className="text-medical-600 hover:text-medical-700 font-medium">
+                  <Link to="/login" className="text-blue-600 hover:text-blue-700 font-medium">
                     Sign in here
                   </Link>
                 </p>

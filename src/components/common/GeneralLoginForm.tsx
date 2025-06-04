@@ -1,67 +1,112 @@
-
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '@/context/AuthContext';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useToast } from '@/hooks/use-toast';
-import { UserType } from '@/types';
 import { Loader2 } from 'lucide-react';
+import api from '@/lib/api';
+import { AxiosError } from 'axios';
 
 const GeneralLoginForm: React.FC = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [userType, setUserType] = useState<UserType>('patient');
-  const { login, isLoading } = useAuth();
+  const [userType, setUserType] = useState<'patient' | 'doctor' | 'medical-center'>('patient');
+  const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
   const navigate = useNavigate();
 
   const getDefaultCredentials = () => {
     const defaults = {
-      patient: { email: 'john.smith@email.com', password: 'demo123' },
-      doctor: { email: 'dr.johnson@hospital.com', password: 'demo123' },
-      hospital: { email: 'admin@citygeneral.com', password: 'demo123' },
+      'patient': { email: 'john.smith@email.com', password: 'demo123' },
+      'doctor': { email: 'dr.johnson@hospital.com', password: 'demo123' },
+      'medical-center': { email: 'admin@citymedical.com', password: 'demo123' },
     };
     return defaults[userType];
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    const success = await login(userType, { email, password });
-    
-    if (success) {
+  const handleLogin = async (credentials: { email: string; password: string }, isDemo: boolean = false) => {
+    setIsLoading(true);
+
+    // Client-side validation
+    if (!credentials.email || !credentials.password) {
       toast({
-        title: 'Login successful!',
-        description: `Welcome to your ${userType} dashboard.`,
+        title: "Error",
+        description: "Please fill in both email and password.",
+        variant: "destructive",
       });
-      navigate(`/${userType}`);
-    } else {
+      setIsLoading(false);
+      return;
+    }
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(credentials.email)) {
       toast({
-        title: 'Login failed',
-        description: 'Please check your credentials and try again.',
+        title: "Error",
+        description: "Please enter a valid email address.",
+        variant: "destructive",
+      });
+      setIsLoading(false);
+      return;
+    }
+
+    try {
+      let endpoint = '';
+      let redirectPath = '';
+      switch (userType) {
+        case 'patient':
+          endpoint = '/login/patient';
+          redirectPath = '/patient/';
+          break;
+        case 'doctor':
+          endpoint = '/login/doctor';
+          redirectPath = '/doctor/';
+          break;
+        case 'medical-center':
+          endpoint = '/login/medical-center';
+          redirectPath = '/medical-center/';
+          break;
+        default:
+          throw new Error('Invalid role selected');
+      }
+
+      await api.post(endpoint, {
+        email: credentials.email,
+        password: credentials.password,
+      });
+
+      toast({
+        title: isDemo ? 'Demo Login Successful!' : 'Login Successful!',
+        description: `Welcome to your ${userType.replace('-', ' ')} dashboard.`,
+      });
+
+      navigate(redirectPath);
+    } catch (error) {
+      const errorMessage = error instanceof AxiosError && error.response?.data?.message
+        ? error.response.data.message
+        : 'Invalid email or password.';
+      toast({
+        title: isDemo ? 'Demo Login Failed' : 'Login Failed',
+        description: errorMessage,
         variant: 'destructive',
       });
+    } finally {
+      setIsLoading(false);
     }
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    await handleLogin({ email, password });
   };
 
   const handleDemoLogin = async () => {
     const defaults = getDefaultCredentials();
     setEmail(defaults.email);
     setPassword(defaults.password);
-    
-    const success = await login(userType, defaults);
-    
-    if (success) {
-      toast({
-        title: 'Demo login successful!',
-        description: `Welcome to your ${userType} dashboard.`,
-      });
-      navigate(`/${userType}`);
-    }
+    await handleLogin(defaults, true);
   };
 
   return (
@@ -78,14 +123,17 @@ const GeneralLoginForm: React.FC = () => {
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <Label htmlFor="userType">Account Type</Label>
-            <Select value={userType} onValueChange={(value: UserType) => setUserType(value)}>
-              <SelectTrigger>
+            <Select
+              value={userType}
+              onValueChange={(value: 'patient' | 'doctor' | 'medical-center') => setUserType(value)}
+            >
+              <SelectTrigger id="userType">
                 <SelectValue placeholder="Select account type" />
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="patient">Patient</SelectItem>
                 <SelectItem value="doctor">Doctor</SelectItem>
-                <SelectItem value="hospital">Hospital</SelectItem>
+                <SelectItem value="medical-center">Medical Center</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -112,8 +160,8 @@ const GeneralLoginForm: React.FC = () => {
             />
           </div>
           <div className="space-y-2">
-            <Button 
-              type="submit" 
+            <Button
+              type="submit"
               className="w-full bg-medical-600 hover:bg-medical-700"
               disabled={isLoading}
             >
@@ -139,8 +187,10 @@ const GeneralLoginForm: React.FC = () => {
         </form>
         <div className="mt-4 p-3 bg-blue-50 rounded-md">
           <p className="text-xs text-blue-700 text-center">
-            <strong>Demo Credentials:</strong><br />
-            Email: {getDefaultCredentials().email}<br />
+            <strong>Demo Credentials:</strong>
+            <br />
+            Email: {getDefaultCredentials().email}
+            <br />
             Password: {getDefaultCredentials().password}
           </p>
         </div>

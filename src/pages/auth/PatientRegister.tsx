@@ -1,57 +1,121 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
+import { Label } from '@radix-ui/react-label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 import { Link, useNavigate } from 'react-router-dom';
 import { Heart, ArrowLeft } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import api from '@/lib/api';
 
 const PatientRegister = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const [formData, setFormData] = useState({
-    fullName: '',
     email: '',
     password: '',
     confirmPassword: '',
-    dateOfBirth: '',
+    firstName: '',
+    lastName: '',
     gender: '',
+    dateOfBirth: '',
     bloodGroup: '',
+    phoneNumber: '',
     address: '',
-    contactNumber: ''
   });
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
-    // Basic validation
-    if (formData.password !== formData.confirmPassword) {
+
+    // Basic client-side validation
+    if (
+      !formData.email ||
+      !formData.password ||
+      !formData.confirmPassword ||
+      !formData.firstName ||
+      !formData.lastName ||
+      !formData.gender ||
+      !formData.dateOfBirth ||
+      !formData.bloodGroup ||
+      !formData.phoneNumber ||
+      !formData.address
+    ) {
       toast({
-        title: "Error",
-        description: "Passwords do not match",
-        variant: "destructive"
+        title: 'Error',
+        description: 'Please fill in all required fields.',
+        variant: 'destructive',
       });
       return;
     }
 
-    // Simulate registration
-    toast({
-      title: "Registration Successful!",
-      description: "Your account has been created. You can now login.",
-    });
+    // Validate password and confirmPassword match
+    if (formData.password !== formData.confirmPassword) {
+      toast({
+        title: 'Error',
+        description: 'Passwords do not match.',
+        variant: 'destructive',
+      });
+      return;
+    }
 
-    // Redirect to login
-    setTimeout(() => {
-      navigate('/');
-    }, 2000);
+    // Validate email format
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(formData.email)) {
+      toast({
+        title: 'Error',
+        description: 'Please enter a valid email address.',
+        variant: 'destructive',
+      });
+      return;
+    }
+
+    // Validate phone number format (10-15 digits)
+    const phoneRegex = /^\d{10,15}$/;
+    if (!phoneRegex.test(formData.phoneNumber)) {
+      toast({
+        title: 'Error',
+        description: 'Please enter a valid phone number (10-15 digits).',
+        variant: 'destructive',
+      });
+      return;
+    }
+
+    try {
+      // Send POST request to backend
+      await api.post('/register/patient', {
+        email: formData.email,
+        password: formData.password,
+        firstName: formData.firstName,
+        lastName: formData.lastName,
+        gender: formData.gender.charAt(0).toUpperCase() + formData.gender.slice(1).toLowerCase(), // Capitalize first letter
+        dateOfBirth: formData.dateOfBirth, // ISO format YYYY-MM-DD
+        bloodGroup: formData.bloodGroup,
+        phoneNumber: formData.phoneNumber,
+        address: formData.address,
+      });
+
+      toast({
+        title: 'Registration Successful!',
+        description: 'Your patient account has been created. Redirecting to login.',
+      });
+
+      // Redirect to login after 2 seconds
+      setTimeout(() => {
+        navigate('/');
+      }, 2000);
+    } catch (error) {
+      toast({
+        title: 'Registration Failed',
+        description: error.message || 'An error occurred during registration.',
+        variant: 'destructive',
+      });
+    }
   };
 
-  const handleInputChange = (field: string, value: string) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
+  const handleInputChange = (field: keyof typeof formData, value: string) => {
+    setFormData((prev) => ({ ...prev, [field]: value }));
   };
 
   return (
@@ -78,15 +142,28 @@ const PatientRegister = () => {
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <Label htmlFor="fullName">Full Name *</Label>
+                  <Label htmlFor="firstName">First Name *</Label>
                   <Input
-                    id="fullName"
+                    id="firstName"
                     type="text"
-                    value={formData.fullName}
-                    onChange={(e) => handleInputChange('fullName', e.target.value)}
+                    value={formData.firstName}
+                    onChange={(e) => handleInputChange('firstName', e.target.value)}
                     required
                   />
                 </div>
+                <div>
+                  <Label htmlFor="lastName">Last Name *</Label>
+                  <Input
+                    id="lastName"
+                    type="text"
+                    value={formData.lastName}
+                    onChange={(e) => handleInputChange('lastName', e.target.value)}
+                    required
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <Label htmlFor="email">Email *</Label>
                   <Input
@@ -94,6 +171,17 @@ const PatientRegister = () => {
                     type="email"
                     value={formData.email}
                     onChange={(e) => handleInputChange('email', e.target.value)}
+                    required
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="phoneNumber">Phone Number *</Label>
+                  <Input
+                    id="phoneNumber"
+                    type="tel"
+                    value={formData.phoneNumber}
+                    onChange={(e) => handleInputChange('phoneNumber', e.target.value)}
+                    placeholder="1234567890"
                     required
                   />
                 </div>
@@ -140,15 +228,18 @@ const PatientRegister = () => {
                       <SelectValue placeholder="Select gender" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="male">Male</SelectItem>
-                      <SelectItem value="female">Female</SelectItem>
-                      <SelectItem value="other">Other</SelectItem>
+                      <SelectItem value="Male">Male</SelectItem>
+                      <SelectItem value="Female">Female</SelectItem>
+                      <SelectItem value="Other">Other</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
                 <div>
                   <Label htmlFor="bloodGroup">Blood Group *</Label>
-                  <Select value={formData.bloodGroup} onValueChange={(value) => handleInputChange('bloodGroup', value)}>
+                  <Select
+                    value={formData.bloodGroup}
+                    onValueChange={(value) => handleInputChange('bloodGroup', value)}
+                  >
                     <SelectTrigger>
                       <SelectValue placeholder="Select blood group" />
                     </SelectTrigger>
@@ -177,25 +268,13 @@ const PatientRegister = () => {
                 />
               </div>
 
-              <div>
-                <Label htmlFor="contactNumber">Contact Number *</Label>
-                <Input
-                  id="contactNumber"
-                  type="tel"
-                  value={formData.contactNumber}
-                  onChange={(e) => handleInputChange('contactNumber', e.target.value)}
-                  placeholder="+1 (555) 123-4567"
-                  required
-                />
-              </div>
-
               <Button type="submit" className="w-full bg-medical-600 hover:bg-medical-700">
                 Register as Patient
               </Button>
 
               <p className="text-center text-sm text-gray-600">
                 Already have an account?{' '}
-                <Link to="/" className="text-medical-600 hover:text-medical-700 font-medium">
+                <Link to="/login" className="text-medical-600 hover:text-medical-700 font-medium">
                   Sign in here
                 </Link>
               </p>
