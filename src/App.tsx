@@ -1,4 +1,4 @@
-
+// src/App.tsx
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -9,10 +9,10 @@ import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import PatientDashboard from "./pages/patient/Dashboard";
 import DoctorDashboard from "./pages/doctor/Dashboard";
-import HospitalDashboard from "./pages/hospital/Dashboard";
+import MedicalCenterDashboard from "./pages/hospital/Dashboard"; // Updated
 import PatientRegister from "./pages/auth/PatientRegister";
 import DoctorRegister from "./pages/auth/DoctorRegister";
-import HospitalRegister from "./pages/auth/HospitalRegister";
+import MedicalCenterRegister from "./pages/auth/HospitalRegister"; // Updated
 import AdminLogin from "./pages/admin/AdminLogin";
 import AdminDashboard from "./pages/admin/AdminDashboard";
 
@@ -20,15 +20,18 @@ const queryClient = new QueryClient();
 
 const ProtectedRoute = ({ children, allowedUserType }: { children: React.ReactNode; allowedUserType: string }) => {
   const { user } = useAuth();
-  
+  console.log('ProtectedRoute: user=', user); // Debug log
+
   if (!user) {
+    console.log('No user, redirecting to /');
     return <Navigate to="/" replace />;
   }
-  
+
   if (user.type !== allowedUserType) {
+    console.log(`User type ${user.type} doesn’t match ${allowedUserType}, redirecting to /${user.type}`);
     return <Navigate to={`/${user.type}`} replace />;
   }
-  
+
   return <>{children}</>;
 };
 
@@ -40,7 +43,7 @@ const AppRoutes = () => {
       {/* Registration Routes */}
       <Route path="/register/patient" element={<PatientRegister />} />
       <Route path="/register/doctor" element={<DoctorRegister />} />
-      <Route path="/register/hospital" element={<HospitalRegister />} />
+      <Route path="/register/medical-center" element={<MedicalCenterRegister />} /> {/* Updated */}
       
       {/* Admin Routes */}
       <Route path="/admin" element={<AdminLogin />} />
@@ -48,7 +51,7 @@ const AppRoutes = () => {
       
       {/* Protected User Routes */}
       <Route 
-        path="/patient/*" 
+        path="/patient" 
         element={
           <ProtectedRoute allowedUserType="patient">
             <PatientDashboard />
@@ -56,7 +59,7 @@ const AppRoutes = () => {
         } 
       />
       <Route 
-        path="/doctor/*" 
+        path="/doctor" 
         element={
           <ProtectedRoute allowedUserType="doctor">
             <DoctorDashboard />
@@ -64,10 +67,10 @@ const AppRoutes = () => {
         } 
       />
       <Route 
-        path="/hospital/*" 
+        path="/medical-center" 
         element={
-          <ProtectedRoute allowedUserType="hospital">
-            <HospitalDashboard />
+          <ProtectedRoute allowedUserType="medical-center">
+            <MedicalCenterDashboard />
           </ProtectedRoute>
         } 
       />
