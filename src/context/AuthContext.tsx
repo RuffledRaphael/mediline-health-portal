@@ -1,4 +1,3 @@
-
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { User, UserType } from '@/types';
 
@@ -7,34 +6,10 @@ interface AuthContextType {
   login: (userType: UserType, credentials: { email: string; password: string }) => Promise<boolean>;
   logout: () => void;
   isLoading: boolean;
+  setUser: React.Dispatch<React.SetStateAction<User | null>>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
-
-// Mock user data
-const mockUsers = {
-  patient: {
-    id: '1',
-    name: 'John Smith',
-    email: 'john.smith@email.com',
-    type: 'patient' as UserType,
-    avatar: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face',
-  },
-  doctor: {
-    id: '2',
-    name: 'Dr. Sarah Johnson',
-    email: 'dr.johnson@hospital.com',
-    type: 'doctor' as UserType,
-    avatar: 'https://images.unsplash.com/photo-1559839734-2b71ea197ec2?w=150&h=150&fit=crop&crop=face',
-  },
-  hospital: {
-    id: '3',
-    name: 'City General Hospital',
-    email: 'admin@citygeneral.com',
-    type: 'hospital' as UserType,
-    avatar: 'https://images.unsplash.com/photo-1516549655169-df83a0774514?w=150&h=150&fit=crop',
-  },
-};
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
@@ -51,21 +26,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const login = async (userType: UserType, credentials: { email: string; password: string }): Promise<boolean> => {
     setIsLoading(true);
-    
-    // Simulate API call delay
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    
-    // Mock authentication - accept any password for demo
-    const mockUser = mockUsers[userType];
-    if (mockUser && credentials.email === mockUser.email) {
-      setUser(mockUser);
-      localStorage.setItem('mediline_user', JSON.stringify(mockUser));
+    try {
+      // Placeholder for backend integration; GeneralLoginForm handles actual API call
       setIsLoading(false);
       return true;
+    } catch {
+      setIsLoading(false);
+      return false;
     }
-    
-    setIsLoading(false);
-    return false;
   };
 
   const logout = () => {
@@ -74,7 +42,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   return (
-    <AuthContext.Provider value={{ user, login, logout, isLoading }}>
+    <AuthContext.Provider value={{ user, login, logout, isLoading, setUser }}>
       {children}
     </AuthContext.Provider>
   );

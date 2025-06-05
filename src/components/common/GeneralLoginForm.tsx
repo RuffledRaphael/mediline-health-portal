@@ -9,19 +9,22 @@ import { useToast } from '@/hooks/use-toast';
 import { Loader2 } from 'lucide-react';
 import api from '@/lib/api';
 import { AxiosError } from 'axios';
+import { useAuth } from '@/context/AuthContext';
+import { UserType } from '@/types';
 
 const GeneralLoginForm: React.FC = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [userType, setUserType] = useState<'patient' | 'doctor' | 'medical-center'>('patient');
+  const [userType, setUserType] = useState<UserType>('patient');
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
   const navigate = useNavigate();
+  const { setUser } = useAuth();
 
   const getDefaultCredentials = () => {
     const defaults = {
-      'patient': { email: 'john.smith@email.com', password: 'demo123' },
-      'doctor': { email: 'dr.johnson@hospital.com', password: 'demo123' },
+      patient: { email: 'john.smith@email.com', password: 'demo123' },
+      doctor: { email: 'dr.johnson@hospital.com', password: 'demo123' },
       'medical-center': { email: 'admin@citymedical.com', password: 'demo123' },
     };
     return defaults[userType];
@@ -64,29 +67,60 @@ const GeneralLoginForm: React.FC = () => {
           endpoint = '/login/doctor';
           redirectPath = '/doctor/';
           break;
-        case 'medical-center':
-          endpoint = '/login/medical-center';
-          redirectPath = '/medical-center/';
-          break;
+        // case 'medical-center':
+        //   endpoint = '/login/medical-center';
+        //   redirectPath = '/medical-center/';
+        //   break;
         default:
           throw new Error('Invalid role selected');
       }
 
-      await api.post(endpoint, {
+      const response = await api.post(endpoint, {
         email: credentials.email,
         password: credentials.password,
       });
 
+      console.log('Full Login Response:', JSON.stringify(response, null, 2));
+
+      // Extract user directly from response (due to interceptor returning response.data)
+      const responseUser = response.user;
+      console.log('Extracted User:', responseUser);
+
+      if (!responseUser || !responseUser.type) {
+        throw new Error('Invalid response: User data missing or type not provided');
+      }
+
+      // Update AuthContext with user data
+      setUser(responseUser);
+      localStorage.setItem('mediline_user', JSON.stringify(responseUser));
+
       toast({
-        title: isDemo ? 'Demo Login Successful!' : 'Login Successful!',
-        description: `Welcome to your ${userType.replace('-', ' ')} dashboard.`,
+        title: isDemo ? 'Demo Login Successful!' : 'Login Successful',
+        description: `Welcome to your ${userType.replace('-', ' ')} dashboard`,
       });
 
       navigate(redirectPath);
     } catch (error) {
-      const errorMessage = error instanceof AxiosError && error.response?.data?.message
-        ? error.response.data.message
-        : 'Invalid email or password.';
+      console.error('Login Error Details:', {
+        error,
+        axiosError: error instanceof AxiosError ? {
+          response: error.response?.data,
+          status: error.response?.status,
+          headers: error.response?.headers,
+        } : null,
+      });
+
+      let errorMessage = 'Invalid email or password. Please try again.';
+      if (error instanceof AxiosError && error.response?.data) {
+        errorMessage = error.response.data.message ||
+                       error.response.data.error ||
+                       error.response.data.data?.message ||
+                       error.response.data.errorMessage ||
+                       `Login failed with status ${error.response.status}`;
+      } else if (error instanceof Error) {
+        errorMessage = error.message;
+      }
+
       toast({
         title: isDemo ? 'Demo Login Failed' : 'Login Failed',
         description: errorMessage,
@@ -125,7 +159,7 @@ const GeneralLoginForm: React.FC = () => {
             <Label htmlFor="userType">Account Type</Label>
             <Select
               value={userType}
-              onValueChange={(value: 'patient' | 'doctor' | 'medical-center') => setUserType(value)}
+              onValueChange={(value: UserType) => setUserType(value)}
             >
               <SelectTrigger id="userType">
                 <SelectValue placeholder="Select account type" />
