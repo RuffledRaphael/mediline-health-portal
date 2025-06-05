@@ -16,6 +16,7 @@ export interface Patient extends User {
   bloodGroup: string;
   address: string;
   phone: string;
+  emergencyContact: string;
 }
 
 export interface Doctor extends User {

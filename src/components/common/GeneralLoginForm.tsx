@@ -83,16 +83,15 @@ const GeneralLoginForm: React.FC = () => {
       console.log('Full Login Response:', JSON.stringify(response, null, 2));
 
       // Extract user directly from response (due to interceptor returning response.data)
-      const responseUser = response.user;
-      console.log('Extracted User:', responseUser);
+      console.log('Extracted User:', response);
 
-      if (!responseUser || !responseUser.type) {
+      if (!response || !response.type) {
         throw new Error('Invalid response: User data missing or type not provided');
       }
 
       // Update AuthContext with user data
-      setUser(responseUser);
-      localStorage.setItem('mediline_user', JSON.stringify(responseUser));
+      setUser(response);
+      localStorage.setItem('mediline_user', JSON.stringify(response));
 
       toast({
         title: isDemo ? 'Demo Login Successful!' : 'Login Successful',
