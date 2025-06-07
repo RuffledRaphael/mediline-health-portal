@@ -1,4 +1,3 @@
-
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -14,38 +13,56 @@ const PatientProfile = () => {
   const { toast } = useToast();
   const [isEditing, setIsEditing] = useState(false);
   const [patientProfile, setPatientProfile] = useState(null);
-  useEffect(() => {
-      const fetchProfile = async () => {
-        try {
-          const response = await api.get('/patient/profile');
-          setPatientProfile(response.data);
-        } catch (error) {
-          console.error('Error fetching profile:', error);
-        }
-      };
-      fetchProfile();
-    }, []);
 
-    if (!patientProfile) return <div>Loading profile...</div>;
-  
+  useEffect(() => {
+    const fetchProfile = async () => {
+      try {
+        const response = await api.get('/patient/profile');
+        setPatientProfile(response.data);
+      } catch (error) {
+        console.error('Error fetching profile:', error);
+      }
+    };
+    fetchProfile();
+  }, []);
+
+  if (!patientProfile) return <div>Loading profile...</div>;
+
   // Using mock patient data
   const patient = mockPatients[0];
-  // const [profileData, setProfileData] = useState(patient);
-
   patientProfile.profilePhotoUrl = patient.avatar;
 
-  const handleSave = () => {
-    // Mock save operation
-    console.log('Profile data saved:', patientProfile);
-    toast({
-      title: 'Profile updated successfully!',
-      description: 'Your changes have been saved.',
-    });
-    setIsEditing(false);
+  const handleSave = async () => {
+    try {
+      const response = await api.post('/patient/profile/update', {
+        email: patientProfile.email,
+        firstName: patientProfile.firstName,
+        lastName: patientProfile.lastName,
+        gender: patientProfile.gender,
+        dateOfBirth: patientProfile.dateOfBirth,
+        bloodGroup: patientProfile.bloodGroup,
+        phoneNumber: patientProfile.phoneNumber,
+        address: patientProfile.address,
+        profilePhotoUrl: patientProfile.profilePhotoUrl
+      });
+      console.log('Profile data updated:', response.data);
+      toast({
+        title: 'Profile updated successfully!',
+        description: 'Your changes have been saved.',
+      });
+      setIsEditing(false);
+    } catch (error) {
+      console.error('Error updating profile:', error);
+      toast({
+        title: 'Error updating profile',
+        description: 'There was an issue saving your changes.',
+        variant: 'destructive',
+      });
+    }
   };
 
-  const handleInputChange = (field: string, value: string) => {
-    // setProfileData(prev => ({ ...prev, [field]: value }));
+  const handleInputChange = (field, value) => {
+    setPatientProfile(prev => ({ ...prev, [field]: value }));
   };
 
   return (
@@ -76,7 +93,7 @@ const PatientProfile = () => {
           </CardHeader>
           <CardContent className="text-center">
             <div className="w-32 h-32 mx-auto mb-4 bg-medical-100 rounded-full flex items-center justify-center">
-              {patientProfile.profilePhotoUrl? (
+              {patientProfile.profilePhotoUrl ? (
                 <img 
                   src={patientProfile.profilePhotoUrl} 
                   alt="Profile" 
@@ -108,11 +125,20 @@ const PatientProfile = () => {
           <CardContent className="space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <Label htmlFor="name">Full Name</Label>
+                <Label htmlFor="firstName">First Name</Label>
                 <Input
-                  id="name"
-                  value={patientProfile.firstName + ' ' + patientProfile.lastName}
-                  onChange={(e) => handleInputChange('name', e.target.value)}
+                  id="firstName"
+                  value={patientProfile.firstName}
+                  onChange={(e) => handleInputChange('firstName', e.target.value)}
+                  disabled={!isEditing}
+                />
+              </div>
+              <div>
+                <Label htmlFor="lastName">Last Name</Label>
+                <Input
+                  id="lastName"
+                  value={patientProfile.lastName}
+                  onChange={(e) => handleInputChange('lastName', e.target.value)}
                   disabled={!isEditing}
                 />
               </div>
@@ -131,7 +157,7 @@ const PatientProfile = () => {
                 <Input
                   id="phone"
                   value={patientProfile.phoneNumber}
-                  onChange={(e) => handleInputChange('phone', e.target.value)}
+                  onChange={(e) => handleInputChange('phoneNumber', e.target.value)}
                   disabled={!isEditing}
                 />
               </div>
