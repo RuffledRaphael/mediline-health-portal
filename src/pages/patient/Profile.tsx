@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { createContext, useContext, useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -8,17 +8,35 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { useToast } from '@/hooks/use-toast';
 import { mockPatients } from '@/data/mockData';
 import { User, Phone, Mail, MapPin, Droplets } from 'lucide-react';
+import api from '@/lib/api';
 
 const PatientProfile = () => {
   const { toast } = useToast();
   const [isEditing, setIsEditing] = useState(false);
+  const [patientProfile, setPatientProfile] = useState(null);
+  useEffect(() => {
+      const fetchProfile = async () => {
+        try {
+          const response = await api.get('/patient/profile');
+          setPatientProfile(response.data);
+        } catch (error) {
+          console.error('Error fetching profile:', error);
+        }
+      };
+      fetchProfile();
+    }, []);
+
+    if (!patientProfile) return <div>Loading profile...</div>;
   
   // Using mock patient data
   const patient = mockPatients[0];
-  const [profileData, setProfileData] = useState(patient);
+  // const [profileData, setProfileData] = useState(patient);
+
+  patientProfile.profilePhotoUrl = patient.avatar;
 
   const handleSave = () => {
     // Mock save operation
+    console.log('Profile data saved:', patientProfile);
     toast({
       title: 'Profile updated successfully!',
       description: 'Your changes have been saved.',
@@ -27,7 +45,7 @@ const PatientProfile = () => {
   };
 
   const handleInputChange = (field: string, value: string) => {
-    setProfileData(prev => ({ ...prev, [field]: value }));
+    // setProfileData(prev => ({ ...prev, [field]: value }));
   };
 
   return (
@@ -58,9 +76,9 @@ const PatientProfile = () => {
           </CardHeader>
           <CardContent className="text-center">
             <div className="w-32 h-32 mx-auto mb-4 bg-medical-100 rounded-full flex items-center justify-center">
-              {patient.avatar ? (
+              {patientProfile.profilePhotoUrl? (
                 <img 
-                  src={patient.avatar} 
+                  src={patientProfile.profilePhotoUrl} 
                   alt="Profile" 
                   className="w-32 h-32 rounded-full object-cover"
                 />
@@ -93,7 +111,7 @@ const PatientProfile = () => {
                 <Label htmlFor="name">Full Name</Label>
                 <Input
                   id="name"
-                  value={profileData.name}
+                  value={patientProfile.firstName + ' ' + patientProfile.lastName}
                   onChange={(e) => handleInputChange('name', e.target.value)}
                   disabled={!isEditing}
                 />
@@ -103,7 +121,7 @@ const PatientProfile = () => {
                 <Input
                   id="email"
                   type="email"
-                  value={profileData.email}
+                  value={patientProfile.email}
                   onChange={(e) => handleInputChange('email', e.target.value)}
                   disabled={!isEditing}
                 />
@@ -112,7 +130,7 @@ const PatientProfile = () => {
                 <Label htmlFor="phone">Phone Number</Label>
                 <Input
                   id="phone"
-                  value={profileData.phone}
+                  value={patientProfile.phoneNumber}
                   onChange={(e) => handleInputChange('phone', e.target.value)}
                   disabled={!isEditing}
                 />
@@ -122,7 +140,7 @@ const PatientProfile = () => {
                 <Input
                   id="dob"
                   type="date"
-                  value={profileData.dateOfBirth}
+                  value={patientProfile.dateOfBirth}
                   onChange={(e) => handleInputChange('dateOfBirth', e.target.value)}
                   disabled={!isEditing}
                 />
@@ -130,12 +148,12 @@ const PatientProfile = () => {
               <div>
                 <Label htmlFor="gender">Gender</Label>
                 <Select 
-                  value={profileData.gender} 
+                  value={patientProfile.gender} 
                   onValueChange={(value) => handleInputChange('gender', value)}
                   disabled={!isEditing}
                 >
                   <SelectTrigger>
-                    <SelectValue />
+                    <SelectValue placeholder="Select Gender" />
                   </SelectTrigger>
                   <SelectContent className="bg-white">
                     <SelectItem value="male">Male</SelectItem>
@@ -147,7 +165,7 @@ const PatientProfile = () => {
               <div>
                 <Label htmlFor="bloodGroup">Blood Group</Label>
                 <Select 
-                  value={profileData.bloodGroup} 
+                  value={patientProfile.bloodGroup} 
                   onValueChange={(value) => handleInputChange('bloodGroup', value)}
                   disabled={!isEditing}
                 >
@@ -171,7 +189,7 @@ const PatientProfile = () => {
               <Label htmlFor="address">Address</Label>
               <Input
                 id="address"
-                value={profileData.address}
+                value={patientProfile.address}
                 onChange={(e) => handleInputChange('address', e.target.value)}
                 disabled={!isEditing}
               />
@@ -180,7 +198,7 @@ const PatientProfile = () => {
               <Label htmlFor="emergencyContact">Emergency Contact</Label>
               <Input
                 id="emergencyContact"
-                value={profileData.emergencyContact}
+                value={patientProfile.phoneNumber}
                 onChange={(e) => handleInputChange('emergencyContact', e.target.value)}
                 disabled={!isEditing}
               />
@@ -205,19 +223,19 @@ const PatientProfile = () => {
             <div className="text-center p-4 bg-gray-50 rounded-lg">
               <Droplets className="w-8 h-8 mx-auto mb-2 text-red-500" />
               <p className="text-sm text-gray-600">Blood Group</p>
-              <p className="text-xl font-bold text-gray-900">{profileData.bloodGroup}</p>
+              <p className="text-xl font-bold text-gray-900">{patientProfile.bloodGroup}</p>
             </div>
             <div className="text-center p-4 bg-gray-50 rounded-lg">
               <User className="w-8 h-8 mx-auto mb-2 text-blue-500" />
               <p className="text-sm text-gray-600">Age</p>
               <p className="text-xl font-bold text-gray-900">
-                {new Date().getFullYear() - new Date(profileData.dateOfBirth).getFullYear()}
+                {new Date().getFullYear() - new Date(patientProfile.dateOfBirth).getFullYear()}
               </p>
             </div>
             <div className="text-center p-4 bg-gray-50 rounded-lg">
               <Phone className="w-8 h-8 mx-auto mb-2 text-green-500" />
               <p className="text-sm text-gray-600">Emergency Contact</p>
-              <p className="text-sm font-medium text-gray-900">{profileData.emergencyContact}</p>
+              <p className="text-sm font-medium text-gray-900">{patientProfile.phoneNumber}</p>
             </div>
           </div>
         </CardContent>

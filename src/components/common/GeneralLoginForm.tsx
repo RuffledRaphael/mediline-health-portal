@@ -80,17 +80,17 @@ const GeneralLoginForm: React.FC = () => {
         password: credentials.password,
       });
 
-      console.log('Full Login Response:', JSON.stringify(response, null, 2));
+      const user = response.data;
 
       // Extract user directly from response (due to interceptor returning response.data)
-      console.log('Extracted User:', response);
+      console.log('Extracted User:', user);
 
-      if (!response || !response.type) {
+      if (!user || !user.type) {
         throw new Error('Invalid response: User data missing or type not provided');
       }
 
       // Update AuthContext with user data
-      setUser(response);
+      setUser(user);
 
       toast({
         title: isDemo ? 'Demo Login Successful!' : 'Login Successful',

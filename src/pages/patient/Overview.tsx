@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { createContext, useContext, useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -7,9 +7,23 @@ import { Calendar, TestTube, Pill, Heart, ArrowRight, Syringe, FileText } from '
 import { Link, useNavigate } from 'react-router-dom';
 import HealthMetricsCarousel from '@/components/patient/HealthMetricsCarousel';
 import DailyMedications from '@/components/patient/DailyMedications';
+import api from '@/lib/api';
 
 const PatientOverview = () => {
   const navigate = useNavigate();
+  const [patientProfile, setPatientProfile] = useState(null);
+
+  useEffect(() => {
+    const fetchProfile = async () => {
+      try {
+        const response = await api.get('/patient/profile');
+        setPatientProfile(response.data);
+      } catch (error) {
+        console.error('Error fetching profile:', error);
+      } 
+    };
+    fetchProfile();
+  }, []);
 
   const upcomingAppointments = [
     {
@@ -77,7 +91,9 @@ const PatientOverview = () => {
     <div className="space-y-6">
       {/* Welcome Banner */}
       <div className="bg-gradient-to-r from-medical-600 to-medical-700 text-white p-6 rounded-lg">
-        <h1 className="text-3xl font-bold mb-2">Welcome back, John Smith!</h1>
+        <h1 className="text-3xl font-bold mb-2">
+          Welcome back, {patientProfile?.firstName} {patientProfile?.lastName}!
+        </h1>
         <p className="text-teal-100">Here's your health overview for today</p>
       </div>
 

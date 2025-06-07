@@ -12,8 +12,7 @@ const api = axios.create({
 // Response interceptor for handling successful responses
 api.interceptors.response.use(
   (response: AxiosResponse) => {
-    // Return the response data directly
-    return response.data;
+    return response;
   },
   (error: AxiosError) => {
     // Handle errors globally

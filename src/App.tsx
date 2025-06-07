@@ -51,7 +51,7 @@ const AppRoutes = () => {
       
       {/* Protected User Routes */}
       <Route 
-        path="/patient" 
+        path="/patient/*" 
         element={
           <ProtectedRoute allowedUserType="patient">
             <PatientDashboard />
@@ -59,7 +59,7 @@ const AppRoutes = () => {
         } 
       />
       <Route 
-        path="/doctor" 
+        path="/doctor/*" 
         element={
           <ProtectedRoute allowedUserType="doctor">
             <DoctorDashboard />
@@ -67,7 +67,7 @@ const AppRoutes = () => {
         } 
       />
       <Route 
-        path="/medical-center" 
+        path="/medical-center/*" 
         element={
           <ProtectedRoute allowedUserType="medical-center">
             <MedicalCenterDashboard />

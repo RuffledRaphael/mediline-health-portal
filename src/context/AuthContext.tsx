@@ -21,12 +21,15 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const checkAuth = async () => {
       try {
         // Try to get user profile based on the cookie
-        const response = await api.get('/patient/profile');
+        const response = await api.get('/patient/me');
+        
         if (response.data) {
           setUser(response.data);
         }
       } catch (error) {
         // If the request fails, user is not authenticated
+        console.error('Error in auth check:', error);
+        console.error('Error response:', error.response); 
         setUser(null);
       } finally {
         setIsLoading(false);
