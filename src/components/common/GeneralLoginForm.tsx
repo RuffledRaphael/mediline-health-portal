@@ -91,7 +91,6 @@ const GeneralLoginForm: React.FC = () => {
 
       // Update AuthContext with user data
       setUser(response);
-      localStorage.setItem('mediline_user', JSON.stringify(response));
 
       toast({
         title: isDemo ? 'Demo Login Successful!' : 'Login Successful',

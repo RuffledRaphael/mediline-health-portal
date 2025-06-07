@@ -1,10 +1,11 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { User, UserType } from '@/types';
+import api from '@/lib/api';
 
 interface AuthContextType {
   user: User | null;
   login: (userType: UserType, credentials: { email: string; password: string }) => Promise<boolean>;
-  logout: () => void;
+  logout: () => Promise<void>;
   isLoading: boolean;
   setUser: React.Dispatch<React.SetStateAction<User | null>>;
 }
@@ -16,18 +17,29 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    // Check for stored user session
-    const storedUser = localStorage.getItem('mediline_user');
-    if (storedUser) {
-      setUser(JSON.parse(storedUser));
-    }
-    setIsLoading(false);
+    // Check authentication status by making a request to the backend
+    const checkAuth = async () => {
+      try {
+        // Try to get user profile based on the cookie
+        const response = await api.get('/patient/profile');
+        if (response.data) {
+          setUser(response.data);
+        }
+      } catch (error) {
+        // If the request fails, user is not authenticated
+        setUser(null);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    checkAuth();
   }, []);
 
   const login = async (userType: UserType, credentials: { email: string; password: string }): Promise<boolean> => {
     setIsLoading(true);
     try {
-      // Placeholder for backend integration; GeneralLoginForm handles actual API call
+      // The actual API call is handled in the login form
       setIsLoading(false);
       return true;
     } catch {
@@ -36,9 +48,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
-  const logout = () => {
-    setUser(null);
-    localStorage.removeItem('mediline_user');
+  const logout = async () => {
+    try {
+      await api.post('/logout');
+      setUser(null);
+    } catch (error) {
+      console.error('Logout error:', error);
+    }
   };
 
   return (
