@@ -12,15 +12,23 @@ import DoctorDashboard from "./pages/doctor/Dashboard";
 import MedicalCenterDashboard from "./pages/hospital/Dashboard"; // Updated
 import PatientRegister from "./pages/auth/PatientRegister";
 import DoctorRegister from "./pages/auth/DoctorRegister";
-import MedicalCenterRegister from "./pages/auth/HospitalRegister"; // Updated
+import HospitalRegister from "./pages/auth/HospitalRegister"; // Updated
 import AdminLogin from "./pages/admin/AdminLogin";
 import AdminDashboard from "./pages/admin/AdminDashboard";
 
 const queryClient = new QueryClient();
 
 const ProtectedRoute = ({ children, allowedUserType }: { children: React.ReactNode; allowedUserType: string }) => {
-  const { user } = useAuth();
+  
+  const { user, isLoading } = useAuth();
   console.log('ProtectedRoute: user=', user); // Debug log
+  console.log('ProtectedRoute: isLoading=', isLoading); // Debug log
+
+  // If still loading, show a loading state
+  // This is important to avoid redirecting before the auth check is complete
+  if (isLoading) {
+    return <div>Loading authentication...</div>; // or use a spinner component
+  }
 
   if (!user) {
     console.log('No user, redirecting to /');
@@ -43,7 +51,7 @@ const AppRoutes = () => {
       {/* Registration Routes */}
       <Route path="/register/patient" element={<PatientRegister />} />
       <Route path="/register/doctor" element={<DoctorRegister />} />
-      <Route path="/register/medical-center" element={<MedicalCenterRegister />} /> {/* Updated */}
+      <Route path="/register/hospital" element={<HospitalRegister />} /> {/* Updated */}
       
       {/* Admin Routes */}
       <Route path="/admin" element={<AdminLogin />} />
@@ -67,9 +75,9 @@ const AppRoutes = () => {
         } 
       />
       <Route 
-        path="/medical-center/*" 
+        path="/hospital/*" 
         element={
-          <ProtectedRoute allowedUserType="medical-center">
+          <ProtectedRoute allowedUserType="hospital">
             <MedicalCenterDashboard />
           </ProtectedRoute>
         } 

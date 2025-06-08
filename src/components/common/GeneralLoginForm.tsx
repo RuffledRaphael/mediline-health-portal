@@ -6,7 +6,7 @@ import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2 } from 'lucide-react';
+import { Hospital, Loader2 } from 'lucide-react';
 import api from '@/lib/api';
 import { AxiosError } from 'axios';
 import { useAuth } from '@/context/AuthContext';
@@ -23,9 +23,9 @@ const GeneralLoginForm: React.FC = () => {
 
   const getDefaultCredentials = () => {
     const defaults = {
-      patient: { email: 'john.smith@email.com', password: 'demo123' },
-      doctor: { email: 'dr.johnson@hospital.com', password: 'demo123' },
-      'medical-center': { email: 'admin@citymedical.com', password: 'demo123' },
+      patient: { email: 'hameem@gmail.com', password: '123456' },
+      doctor: { email: 'hameem812@gmail.com', password: '123456' },
+      hospital: { email: 'dmc@gmail.com', password: '123456' },
     };
     return defaults[userType];
   };
@@ -67,10 +67,11 @@ const GeneralLoginForm: React.FC = () => {
           endpoint = '/login/doctor';
           redirectPath = '/doctor/';
           break;
-        // case 'medical-center':
-        //   endpoint = '/login/medical-center';
-        //   redirectPath = '/medical-center/';
-        //   break;
+        case 'hospital':
+          endpoint = '/login/medical-center'; // medical center is in backend
+          // Ensure the endpoint matches your backend route
+          redirectPath = '/hospital/';
+          break;
         default:
           throw new Error('Invalid role selected');
       }
@@ -165,7 +166,7 @@ const GeneralLoginForm: React.FC = () => {
               <SelectContent>
                 <SelectItem value="patient">Patient</SelectItem>
                 <SelectItem value="doctor">Doctor</SelectItem>
-                <SelectItem value="medical-center">Medical Center</SelectItem>
+                <SelectItem value="hospital">Hospital</SelectItem>
               </SelectContent>
             </Select>
           </div>

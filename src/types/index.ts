@@ -6,7 +6,7 @@ export interface User {
   name: string;
   email: string;
   type: UserType;
-  avatar?: string;
+  avatar: string;
 }
 
 export interface Patient extends User {
