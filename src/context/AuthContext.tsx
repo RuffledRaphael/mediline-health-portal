@@ -21,10 +21,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const checkAuth = async () => {
       try {
         // Try to get user profile based on the cookie
-        // await api.get('/refresh'); 
-        // const response = await api.get('/patient/me');
-        await api.get('/refresh', { withCredentials: true });
-        const response = await api.get('/me', { withCredentials: true });
+        await api.get('/refresh');
+        const response = await api.get('/me');
         console.log('Auth check response:', response.data); // Debug log
         
         if (response.data) {
