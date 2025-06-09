@@ -2,8 +2,8 @@ import axios, { AxiosError, AxiosResponse } from 'axios';
 
 // Create an Axios instance with default configuration
 const api = axios.create({
-  baseURL: 'http://localhost:8081', // Backend base URL
-  withCredentials: true, // Include cookies in requests/responses
+  baseURL: '/api', // Nginx will proxy this to the backend
+  withCredentials: true,
   headers: {
     'Content-Type': 'application/json',
   },

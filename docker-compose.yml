@@ -1,0 +1,17 @@
+version: '3.8'
+
+services:
+  frontend:
+    build:
+      context: .
+    container_name: mediline-frontend
+    ports:
+      - "8080:80"
+    networks:
+      - mediline-net
+
+networks:
+  mediline-net:
+    driver: bridge
+    external: true
+
