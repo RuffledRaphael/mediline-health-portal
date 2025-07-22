@@ -32,9 +32,9 @@ const PatientHistory = () => {
   const [searchKeyword, setSearchKeyword] = useState('');
   const [fromDate, setFromDate] = useState('');
   const [toDate, setToDate] = useState('');
-  const [testType, setTestType] = useState('');
-  const [doctorFilter, setDoctorFilter] = useState('');
-  const [hospitalFilter, setHospitalFilter] = useState('');
+  const [testType, setTestType] = useState('all-types');
+  const [doctorFilter, setDoctorFilter] = useState('all-doctors');
+  const [hospitalFilter, setHospitalFilter] = useState('all-facilities');
   const [hasNotes, setHasNotes] = useState(false);
   const [filtersOpen, setFiltersOpen] = useState(false);
 
@@ -63,9 +63,9 @@ const PatientHistory = () => {
     
     const matchesFromDate = !fromDate || new Date(test.date) >= new Date(fromDate);
     const matchesToDate = !toDate || new Date(test.date) <= new Date(toDate);
-    const matchesType = !testType || test.testType === testType;
-    const matchesDoctor = !doctorFilter || test.performedBy?.includes(doctorFilter);
-    const matchesHospital = !hospitalFilter || test.hospitalId === hospitalFilter;
+    const matchesType = !testType || testType === 'all-types' || test.testType === testType;
+    const matchesDoctor = !doctorFilter || doctorFilter === 'all-doctors' || test.performedBy?.includes(doctorFilter);
+    const matchesHospital = !hospitalFilter || hospitalFilter === 'all-facilities' || test.hospitalId === hospitalFilter;
     const matchesNotes = !hasNotes || (test.notes && test.notes.length > 0);
 
     return matchesKeyword && matchesFromDate && matchesToDate && 
@@ -76,9 +76,9 @@ const PatientHistory = () => {
     setSearchKeyword('');
     setFromDate('');
     setToDate('');
-    setTestType('');
-    setDoctorFilter('');
-    setHospitalFilter('');
+    setTestType('all-types');
+    setDoctorFilter('all-doctors');
+    setHospitalFilter('all-facilities');
     setHasNotes(false);
   };
 
@@ -333,7 +333,7 @@ const PatientHistory = () => {
                                     <SelectValue placeholder="Select type" />
                                   </SelectTrigger>
                                   <SelectContent className="bg-background">
-                                    <SelectItem value="">All Types</SelectItem>
+                                    <SelectItem value="all-types">All Types</SelectItem>
                                     <SelectItem value="Pathology">Pathology</SelectItem>
                                     <SelectItem value="Imaging">Imaging</SelectItem>
                                   </SelectContent>
@@ -348,7 +348,7 @@ const PatientHistory = () => {
                                     <SelectValue placeholder="Select doctor" />
                                   </SelectTrigger>
                                   <SelectContent className="bg-background">
-                                    <SelectItem value="">All Doctors</SelectItem>
+                                    <SelectItem value="all-doctors">All Doctors</SelectItem>
                                     {mockDoctors.map((doctor) => (
                                       <SelectItem key={doctor.id} value={doctor.name}>
                                         {doctor.name}
@@ -366,7 +366,7 @@ const PatientHistory = () => {
                                     <SelectValue placeholder="Select facility" />
                                   </SelectTrigger>
                                   <SelectContent className="bg-background">
-                                    <SelectItem value="">All Facilities</SelectItem>
+                                    <SelectItem value="all-facilities">All Facilities</SelectItem>
                                     {allHospitals.map((hospital) => (
                                       <SelectItem key={hospital.id} value={hospital.id}>
                                         {hospital.name}
