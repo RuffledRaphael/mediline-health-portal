@@ -46,6 +46,18 @@ const PatientDashboard = () => {
     if (exact) {
       return location.pathname === path;
     }
+    
+    // Special handling for test-related routes to prevent overlapping highlights
+    if (path === '/patient/tests' && location.pathname.startsWith('/patient/tests/')) {
+      // Only highlight "Tests & Results" if we're exactly on /patient/tests
+      return location.pathname === '/patient/tests';
+    }
+    
+    if (path === '/patient/tests/request' && location.pathname === '/patient/tests/requests-list') {
+      // Don't highlight "Request Test" when on "My Test Requests"
+      return false;
+    }
+    
     return location.pathname.startsWith(path);
   };
 
