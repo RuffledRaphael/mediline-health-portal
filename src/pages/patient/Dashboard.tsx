@@ -48,14 +48,19 @@ const PatientDashboard = () => {
     }
     
     // Special handling for test-related routes to prevent overlapping highlights
-    if (path === '/patient/tests' && location.pathname.startsWith('/patient/tests/')) {
+    if (path === '/patient/tests') {
       // Only highlight "Tests & Results" if we're exactly on /patient/tests
       return location.pathname === '/patient/tests';
     }
     
-    if (path === '/patient/tests/request' && location.pathname === '/patient/tests/requests-list') {
-      // Don't highlight "Request Test" when on "My Test Requests"
-      return false;
+    if (path === '/patient/tests/request') {
+      // Only highlight "Request Test" if we're exactly on /patient/tests/request
+      return location.pathname === '/patient/tests/request';
+    }
+    
+    if (path === '/patient/tests/requests-list') {
+      // Only highlight "My Test Requests" if we're exactly on /patient/tests/requests-list
+      return location.pathname === '/patient/tests/requests-list';
     }
     
     return location.pathname.startsWith(path);
